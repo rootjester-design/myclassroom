@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 :root {
   --primary: #e53935;
   --primary-dark: #b71c1c;
@@ -26,23 +24,33 @@
   --radius: 16px;
   --radius-lg: 24px;
   --radius-xl: 32px;
-  --font: 'Inter', sans-serif;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
   --sidebar-w: 260px;
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html { scroll-behavior:smooth; }
+html {
+  scroll-behavior:smooth;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
 body {
-  font-family: var(--font);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--black);
   line-height: 1.6;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
+button, input, textarea, select { min-width: 0; }
+button { touch-action: manipulation; }
+img, video, iframe { max-width: 100%; height: auto; }
+a { word-break: break-word; }
 a { text-decoration:none; color:inherit; }
 img { max-width:100%; display:block; }
-input,textarea,select,button { font-family:var(--font); }
+input,textarea,select,button { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 ul,ol { list-style:none; }
 
 /* ── Scrollbar ── */
@@ -133,6 +141,15 @@ ul,ol { list-style:none; }
 .form-error { font-size:0.8rem; color:var(--primary); margin-top:4px; }
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 @media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+@media(max-width:640px) {
+  .btn { padding: 14px 20px; font-size: 0.95rem; }
+  .btn-full { width: 100%; }
+  .form-control { padding: 14px 16px; font-size: 0.95rem; }
+  .text-center { text-align: center; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .course-card-thumb { height: 160px; }
+}
 
 /* ── Badge ── */
 .badge {
