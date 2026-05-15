@@ -315,36 +315,58 @@
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid rgba(229,57,53,0.1);
   z-index: 200;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding: 8px 0 env(safe-area-inset-bottom, 0px);
   box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
 }
-.bottom-nav-inner { display: flex; height: 58px; }
+.bottom-nav-inner {
+  display: flex;
+  height: 64px;
+  align-items: center;
+}
 .bottom-nav-item {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 6px 4px;
+  gap: 4px;
+  min-height: 62px;
+  padding: 4px 2px 2px;
   cursor: pointer;
   border: none;
   background: none;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--gray-500);
-  transition: color 0.2s;
+  transition: color 0.2s ease, transform 0.2s ease;
   position: relative;
+  text-align: center;
 }
-.bottom-nav-item .bn-icon { font-size: 1.25rem; transition: transform 0.2s; line-height: 1; }
-.bottom-nav-item.active { color: var(--primary); }
-.bottom-nav-item.active .bn-icon { transform: scale(1.15); }
+.bottom-nav-item span { display: block; }
+.bottom-nav-item .bn-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  display: block;
+}
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+.bottom-nav-item.active .bn-icon {
+  transform: scale(1.18);
+}
 .bottom-nav-item.active::before {
   content: '';
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 28px; height: 3px;
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
   background: var(--primary);
   border-radius: 0 0 4px 4px;
+}
+.bottom-nav-item:hover {
+  color: var(--primary);
 }
 
 /* ── Sidebar Overlay ── */
