@@ -11,6 +11,30 @@ class Database {
             throw new PDOException('Unable to create database directory: ' . $dbDir);
         }
 
+        // Ensure the database directory and file are writable. On deployed servers
+        // a common cause of "attempt to write a readonly database" is incorrect
+        // ownership/permissions (e.g., file owned by root). Attempt a safe chmod,
+        // but if it fails, raise a clear error with remediation steps.
+        $dbFile = DB_PATH;
+        if (file_exists($dbFile)) {
+            if (!is_writable($dbFile)) {
+                @chmod($dbFile, 0664);
+                if (!is_writable($dbFile)) {
+                    throw new PDOException('Database file is not writable: ' . $dbFile . '.\n' .
+                        'Fix: on the server run e.g. `chown -R www-data:www-data ' . dirname(DB_PATH) . '` and `chmod -R 775 ' . dirname(DB_PATH) . '` (adjust user for your webserver).');
+                }
+            }
+        } else {
+            // If the file doesn't exist yet, the directory itself must be writable
+            if (!is_writable($dbDir)) {
+                @chmod($dbDir, 0775);
+                if (!is_writable($dbDir)) {
+                    throw new PDOException('Database directory is not writable: ' . $dbDir . '.\n' .
+                        'Fix: on the server run e.g. `chown -R www-data:www-data ' . $dbDir . '` and `chmod -R 775 ' . $dbDir . '` (adjust user for your webserver).');
+                }
+            }
+        }
+
         try {
             $this->pdo = new PDO('sqlite:' . DB_PATH);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
