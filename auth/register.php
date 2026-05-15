@@ -128,11 +128,76 @@ let verifiedPhone=''; let resendInterval;
 function showToast(msg,type='info'){const icons={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=`<span class="toast-icon">${icons[type]}</span><span>${msg}</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>`;document.getElementById('toast-container').appendChild(t);setTimeout(()=>{t.style.animation='slideOut 0.3s ease forwards';setTimeout(()=>t.remove(),300);},4000);}
 function goStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('step'+i);if(el)el.classList.toggle('hidden',i!==n);});document.getElementById('step1-dot').className='step-dot'+(n>=1?' active':'');document.getElementById('step2-dot').className='step-dot'+(n===2?' active':n>2?' done':'');document.getElementById('step3-dot').className='step-dot'+(n===3?' active':'');document.getElementById('line1').className='step-line'+(n>1?' done':'');document.getElementById('line2').className='step-line'+(n>2?' done':'');}
 function setLoading(b,t,s,txt,on){document.getElementById(b).disabled=on;document.getElementById(t).textContent=txt;document.getElementById(s).classList.toggle('hidden',!on);}
-async function sendOtp(){const phone=document.getElementById('reg-phone').value.trim();document.getElementById('phone-err').textContent='';if(!phone||phone.length<9){document.getElementById('phone-err').textContent='Enter a valid phone number';return;}setLoading('sendOtpBtn','sendOtpText','sendOtpSpinner','Sending...',true);try{const fd=new FormData();fd.append('phone','0'+phone.replace(/^0/,''));fd.append('purpose','register');fd.append('csrf_token',document.getElementById('csrfToken').value);const res=await fetch('../api/auth/send-otp.php',{method:'POST',body:fd});const data=await res.json();if(data.success){verifiedPhone='0'+phone.replace(/^0/,'');document.getElementById('otp-subtitle').textContent=`OTP sent to +94${phone}`;if(data.otp)showToast(`Dev OTP: ${data.otp}`,'info');else showToast('OTP sent!','success');goStep(2);startTimer();}else{showToast(data.message||'Failed','error');}}catch(e){showToast('Network error','error');}setLoading('sendOtpBtn','sendOtpText','sendOtpSpinner','Send OTP',false);}
+async function sendOtp(){
+  const phone = document.getElementById('reg-phone').value.trim();
+  document.getElementById('phone-err').textContent = '';
+  if (!phone || phone.length < 9) {
+    document.getElementById('phone-err').textContent = 'Enter a valid phone number';
+    return;
+  }
+  setLoading('sendOtpBtn','sendOtpText','sendOtpSpinner','Sending...',true);
+  try {
+    const fd = new FormData();
+    fd.append('phone', '0' + phone.replace(/^0/, ''));
+    fd.append('purpose', 'register');
+    fd.append('csrf_token', document.getElementById('csrfToken').value);
+    const res = await fetch('../api/auth/send-otp.php', { method: 'POST', body: fd });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
+    if (data.success) {
+      verifiedPhone = '0' + phone.replace(/^0/, '');
+      document.getElementById('otp-subtitle').textContent = `OTP sent to +94${phone}`;
+      if (data.otp) showToast(`Dev OTP: ${data.otp}`, 'info'); else showToast('OTP sent!','success');
+      goStep(2);
+      startTimer();
+    } else {
+      showToast(data.message || 'Failed', 'error');
+    }
+  } catch (e) {
+    showToast(e.message || 'Network error', 'error');
+  }
+  setLoading('sendOtpBtn','sendOtpText','sendOtpSpinner','Send OTP',false);
+}
 function startTimer(){let sec=60;document.getElementById('resendBtn').style.opacity='0.4';document.getElementById('resendTimer').textContent=`(${sec}s)`;clearInterval(resendInterval);resendInterval=setInterval(()=>{sec--;document.getElementById('resendTimer').textContent=`(${sec}s)`;if(sec<=0){clearInterval(resendInterval);document.getElementById('resendBtn').style.opacity='1';document.getElementById('resendTimer').textContent='';}},1000);}
-document.querySelectorAll('.otp-input').forEach((inp,idx,all)=>{inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/,'');if(inp.value&&idx<5)all[idx+1].focus();inp.classList.toggle('filled',!!inp.value);});inp.addEventListener('keydown',(e)=>{if(e.key==='Backspace'&&!inp.value&&idx>0)all[idx-1].focus();});inp.addEventListener('paste',(e)=>{e.preventDefault();const p=e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);[...p].forEach((c,i)=>{if(all[i]){all[i].value=c;all[i].classList.add('filled');}});if(all[p.length-1])all[p.length-1].focus();});});
-async function verifyOtp(){const otp=[...document.querySelectorAll('.otp-input')].map(i=>i.value).join('');document.getElementById('otp-err').textContent='';if(otp.length<6){document.getElementById('otp-err').textContent='Enter all 6 digits';return;}setLoading('verifyOtpBtn','verifyText','verifySpinner','Verifying...',true);try{const fd=new FormData();fd.append('phone',verifiedPhone);fd.append('otp',otp);fd.append('purpose','register');fd.append('csrf_token',document.getElementById('csrfToken').value);const res=await fetch('../api/auth/verify-otp.php',{method:'POST',body:fd});const data=await res.json();if(data.success){showToast('Phone verified!','success');document.getElementById('reg-phone-hidden').value=verifiedPhone;goStep(3);}else{document.getElementById('otp-err').textContent=data.message||'Invalid OTP';}}catch(e){showToast('Network error','error');}setLoading('verifyOtpBtn','verifyText','verifySpinner','Verify OTP',false);}
-document.getElementById('registerForm').addEventListener('submit',async(e)=>{e.preventDefault();const pass=document.getElementById('reg-pass').value;const pass2=document.getElementById('reg-pass2').value;document.getElementById('pass-err').textContent='';if(pass.length<8){document.getElementById('pass-err').textContent='Password must be 8+ characters';return;}if(pass!==pass2){document.getElementById('pass-err').textContent='Passwords do not match';return;}setLoading('registerBtn','regText','regSpinner','Creating...',true);try{const fd=new FormData(e.target);const res=await fetch('../api/auth/register.php',{method:'POST',body:fd});const data=await res.json();if(data.success){showToast('Account created! Redirecting...','success');setTimeout(()=>window.location.href='../student/dashboard.php',1200);}else{showToast(data.message||'Registration failed','error');}}catch(err){showToast('Network error','error');}setLoading('registerBtn','regText','regSpinner','Create Account 🎉',false);});
+document.querySelectorAll('.otp-input').forEach((inp,idx,all)=>{
+  inp.addEventListener('input',()=>{ inp.value = inp.value.replace(/\D/,''); if (inp.value && idx < 5) all[idx+1].focus(); inp.classList.toggle('filled', !!inp.value); });
+  inp.addEventListener('keydown', (e)=>{ if (e.key === 'Backspace' && !inp.value && idx > 0) all[idx-1].focus(); });
+  inp.addEventListener('paste', (e)=>{ e.preventDefault(); const p = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6); [...p].forEach((c,i)=>{ if (all[i]){ all[i].value = c; all[i].classList.add('filled'); }}); if (all[p.length-1]) all[p.length-1].focus(); });
+});
+
+async function verifyOtp(){
+  const otp = [...document.querySelectorAll('.otp-input')].map(i=>i.value).join('');
+  document.getElementById('otp-err').textContent = '';
+  if (otp.length < 6) { document.getElementById('otp-err').textContent = 'Enter all 6 digits'; return; }
+  setLoading('verifyOtpBtn','verifyText','verifySpinner','Verifying...',true);
+  try {
+    const fd = new FormData(); fd.append('phone', verifiedPhone); fd.append('otp', otp); fd.append('purpose', 'register'); fd.append('csrf_token', document.getElementById('csrfToken').value);
+    const res = await fetch('../api/auth/verify-otp.php', { method: 'POST', body: fd });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
+    if (data.success) { showToast('Phone verified!','success'); document.getElementById('reg-phone-hidden').value = verifiedPhone; goStep(3); }
+    else { document.getElementById('otp-err').textContent = data.message || 'Invalid OTP'; }
+  } catch (e) { showToast(e.message || 'Network error', 'error'); }
+  setLoading('verifyOtpBtn','verifyText','verifySpinner','Verify OTP',false);
+}
+document.getElementById('registerForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const pass=document.getElementById('reg-pass').value;const pass2=document.getElementById('reg-pass2').value;document.getElementById('pass-err').textContent='';
+  if(pass.length<8){document.getElementById('pass-err').textContent='Password must be 8+ characters';return;}if(pass!==pass2){document.getElementById('pass-err').textContent='Passwords do not match';return;}
+  setLoading('registerBtn','regText','regSpinner','Creating...',true);
+  try{
+    const fd=new FormData(e.target);
+    const res=await fetch('../api/auth/register.php',{method:'POST',body:fd});
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(parseErr) { throw new Error(text || 'Invalid server response'); }
+    if(data.success){ showToast('Account created! Redirecting...','success'); setTimeout(()=>window.location.href='../student/dashboard.php',1200); }
+    else{ showToast(data.message||'Registration failed','error'); }
+  }catch(err){ showToast(err.message||'Network error','error'); }
+  setLoading('registerBtn','regText','regSpinner','Create Account 🎉',false);
+});
 function togglePwd(id,el){const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';el.innerHTML=show?'<i class="fa fa-eye-slash"></i>':'<i class="fa fa-eye"></i>';}
 </script>
 </body>
