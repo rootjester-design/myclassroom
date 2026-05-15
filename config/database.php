@@ -7,8 +7,8 @@ class Database {
 
     private function __construct() {
         $dbDir = dirname(DB_PATH);
-        if (!is_dir($dbDir)) {
-            mkdir($dbDir, 0755, true);
+        if (!is_dir($dbDir) && !mkdir($dbDir, 0755, true) && !is_dir($dbDir)) {
+            throw new PDOException('Unable to create database directory: ' . $dbDir);
         }
 
         try {
@@ -19,7 +19,18 @@ class Database {
             $this->pdo->exec('PRAGMA foreign_keys=ON');
             $this->initDatabase();
         } catch (PDOException $e) {
-            die(json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]));
+            $message = 'Database connection failed: ' . $e->getMessage();
+            error_log($message);
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $message]);
+            } else {
+                http_response_code(500);
+                header('Content-Type: text/plain; charset=UTF-8');
+                echo $message;
+            }
+            exit;
         }
     }
 
