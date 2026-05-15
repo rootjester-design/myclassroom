@@ -75,13 +75,7 @@ document.getElementById('adminLoginForm').addEventListener('submit',async e=>{
     const d=await res.json();
     if(d.success){
       showToast('Login successful!','success');
-      setTimeout(()=>{
-        let redirectUrl = d.redirect || '/';
-        if(!redirectUrl.startsWith('http')){
-          if(!redirectUrl.startsWith('/myclassroom')) redirectUrl = '/myclassroom' + (redirectUrl.startsWith('/') ? redirectUrl : '/' + redirectUrl);
-        }
-        window.location.href = redirectUrl;
-      },800);
+      setTimeout(()=>{ window.location.href = d.redirect; },800);
     }
     else{showToast(d.message||'Login failed','error');}
   }catch(err){showToast('Network error','error');}

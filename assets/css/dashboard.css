@@ -394,6 +394,16 @@
   .welcome-emoji { display: none; }
 }
 
+@media(max-width:520px) {
+  .topbar-right { gap: 6px; }
+  .icon-btn { width: 34px; height: 34px; }
+  .sidebar-nav { padding: 10px; }
+  .nav-item { font-size: 0.85rem; }
+  .modal { width: min(calc(100% - 24px), 520px); margin: 12px; }
+  .search-bar { min-width: 0; }
+  .page-content { padding-bottom: 90px; }
+}
+
 /* ── Tutor / Admin Sidebar ── */
 .admin-sidebar {
   background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);

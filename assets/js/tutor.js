@@ -29,7 +29,7 @@ async function api(url, opts={}) {
   }
   const res = await fetch(url, Object.assign({}, opts, { headers }));
   if (!res.ok && res.status === 401) {
-    window.location.href = '/myclassroom/admin/login.php';
+    window.location.href = '../admin/login.php';
     return { success: false };
   }
   try { return await res.json(); } catch(e) { return { success: false, message: 'Server error' }; }

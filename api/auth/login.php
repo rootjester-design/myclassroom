@@ -21,7 +21,7 @@ if ($student && password_verify($password, $student['password'])) {
     loginUser($student, 'student');
     $db->execute("UPDATE students SET last_login=datetime('now') WHERE id=?", [$student['id']]);
     logActivity((int)$student['id'],'student','login','Student logged in');
-    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/student/dashboard.php']);
+    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/student/dashboard.php']);
 }
 
 // Try tutor login
@@ -31,7 +31,7 @@ if ($tutor && password_verify($password, $tutor['password'])) {
     if (!$tutor['is_approved']) jsonResponse(['success'=>false,'message'=>'Your account is pending approval.']);
     loginUser($tutor, 'tutor');
     logActivity((int)$tutor['id'],'tutor','login','Tutor logged in');
-    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/tutor/dashboard.php']);
+    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/tutor/dashboard.php']);
 }
 
 // Try admin login
@@ -41,7 +41,7 @@ if ($admin && password_verify($password, $admin['password'])) {
     loginUser($admin, 'super_admin');
     $db->execute("UPDATE admins SET last_login=datetime('now') WHERE id=?",[$admin['id']]);
     logActivity((int)$admin['id'],'admin','login','Admin logged in');
-    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/admin/dashboard.php']);
+    jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/admin/dashboard.php']);
 }
 
 jsonResponse(['success'=>false,'message'=>'Invalid phone number or password']);
