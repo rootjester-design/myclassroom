@@ -3,7 +3,7 @@ require_once '../includes/helpers.php';
 startSession();
 $user = getAuthUser();
 if (!$user || $user['role'] !== 'super_admin') {
-    header('Location: admin/login.php');
+    header('Location: /admin/login.php');
     exit;
 }
 $db = Database::getInstance();
