@@ -80,7 +80,7 @@ function verifyCsrfToken(string $token): bool {
 // ============================================================
 // Response Helpers
 // ============================================================
-function jsonResponse(array $data, int $statusCode = 200): never {
+function jsonResponse(array $data, int $statusCode = 200): void {
     http_response_code($statusCode);
     header('Content-Type: application/json');
     header('X-Content-Type-Options: nosniff');
@@ -89,9 +89,9 @@ function jsonResponse(array $data, int $statusCode = 200): never {
 }
 
 function isAjax(): bool {
-    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest' ||
-        (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+    return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+        (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
 }
 
 // ============================================================
@@ -111,9 +111,9 @@ function validatePassword(string $password): bool {
 
 function formatPhone(string $phone): string {
     $phone = preg_replace('/\D/', '', $phone);
-    if (str_starts_with($phone, '0')) {
+    if (strpos($phone, '0') === 0) {
         $phone = '94' . substr($phone, 1);
-    } elseif (str_starts_with($phone, '94')) {
+    } elseif (strpos($phone, '94') === 0) {
         // already formatted
     }
     return '+' . $phone;
@@ -220,7 +220,7 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
 
 function assetPath(string $path): string {
     if (!$path) return '';
-    if (str_starts_with($path, '/assets/')) {
+    if (strpos($path, '/assets/') === 0) {
         return APP_URL . $path;
     }
     return $path;
@@ -273,11 +273,11 @@ function createNotification(int $userId, string $userType, string $title, string
 // ============================================================
 // Redirect helper
 // ============================================================
-function redirect(string $url): never {
+function redirect(string $url): void {
     // Normalize redirect to absolute URL using APP_URL
-    if (str_starts_with($url, '/')) {
+    if (strpos($url, '/') === 0) {
         $url = rtrim(APP_URL, '/') . $url;
-    } else if (!str_starts_with($url, 'http')) {
+    } else if (strpos($url, 'http') !== 0) {
         $url = rtrim(APP_URL, '/') . '/' . ltrim($url, '/');
     }
     header('Location: ' . $url);
