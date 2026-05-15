@@ -310,7 +310,8 @@
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   box-sizing: border-box;
   background: rgba(255,255,255,0.98);
@@ -348,6 +349,7 @@
   position: relative;
   text-align: center;
   white-space: nowrap;
+  touch-action: manipulation;
 }
 .bottom-nav-item span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .bottom-nav-item .bn-icon {
