@@ -1,0 +1,12 @@
+# ───────────────────────────────────────────────────────
+# Deny direct HTTP access to all upload subdirectories
+# ───────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Block PHP execution in uploads
+    RewriteRule \.php$ - [F,L]
+</IfModule>
+
+# Deny script execution
+Options -ExecCGI
+AddHandler cgi-script .php .pl .py .jsp .asp .sh .cgi
