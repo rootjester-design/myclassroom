@@ -59,7 +59,6 @@ if (isLoggedIn() && getAuthUser()['role']==='tutor') redirect('/tutor/dashboard.
       <p class="text-center text-muted fs-sm mt-20">Student? <a href="../auth/login.php" class="auth-link">Student Login</a></p>
       <div class="alert alert-info mt-20 fs-xs">
         <i class="fa fa-info-circle"></i>
-        Default admin: <strong>admin@myclassroom.lk</strong> / <strong>Admin@123456</strong>
       </div>
     </div>
   </div>
