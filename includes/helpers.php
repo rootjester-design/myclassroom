@@ -274,9 +274,11 @@ function createNotification(int $userId, string $userType, string $title, string
 // Redirect helper
 // ============================================================
 function redirect(string $url): never {
-    // If URL is an absolute path starting with /, prepend APP_URL base path
-    if (str_starts_with($url, '/') && !str_starts_with($url, '/myclassroom')) {
-        $url = '/myclassroom' . $url;
+    // Normalize redirect to absolute URL using APP_URL
+    if (str_starts_with($url, '/')) {
+        $url = rtrim(APP_URL, '/') . $url;
+    } else if (!str_starts_with($url, 'http')) {
+        $url = rtrim(APP_URL, '/') . '/' . ltrim($url, '/');
     }
     header('Location: ' . $url);
     exit;

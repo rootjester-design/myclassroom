@@ -123,7 +123,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await res.json();
     if (data.success) {
       showToast('Login successful! Redirecting...', 'success');
-      setTimeout(() => { window.location.href = '/myclassroom' + data.redirect; }, 800);
+      setTimeout(() => {
+        let redirectUrl = data.redirect || '/';
+        if (!redirectUrl.startsWith('http')) {
+          if (!redirectUrl.startsWith('/myclassroom')) redirectUrl = '/myclassroom' + (redirectUrl.startsWith('/') ? redirectUrl : '/' + redirectUrl);
+        }
+        window.location.href = redirectUrl;
+      }, 800);
     } else {
       showToast(data.message || 'Login failed', 'error');
       if (data.field === 'phone') document.getElementById('phone-error').textContent = data.message;
