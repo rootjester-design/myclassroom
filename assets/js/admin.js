@@ -16,7 +16,8 @@ async function api(url, opts={}) {
     window.location.href = '../admin/login.php';
     return { success: false };
   }
-  try { return await res.json(); } catch(e) { return { success: false, message: 'Server error' }; }
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { return { success: false, message: text || 'Server error' }; }
 }
 
 function switchTab(name,el){

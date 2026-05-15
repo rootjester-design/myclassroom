@@ -120,7 +120,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   try {
     const fd = new FormData(e.target);
     const res = await fetch('../api/auth/login.php', { method:'POST', body: fd });
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
     if (data.success) {
       showToast('Login successful! Redirecting...', 'success');
       setTimeout(() => { window.location.href = data.redirect; }, 800);
@@ -130,7 +132,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       if (data.field === 'password') document.getElementById('pass-error').textContent = data.message;
     }
   } catch(err) {
-    showToast('Network error. Please try again.', 'error');
+    showToast(err.message || 'Network error. Please try again.', 'error');
   } finally {
     btn.disabled = false;
     btnText.textContent = 'Sign In';

@@ -72,13 +72,17 @@ document.getElementById('adminLoginForm').addEventListener('submit',async e=>{
   btn.disabled=true;text.textContent='Signing in...';spin.classList.remove('hidden');
   try{
     const res=await fetch('../api/auth/login.php',{method:'POST',body:new FormData(e.target)});
-    const d=await res.json();
+    const text=await res.text();
+    let d;
+    try { d = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
     if(d.success){
       showToast('Login successful!','success');
       setTimeout(()=>{ window.location.href = d.redirect; },800);
     }
     else{showToast(d.message||'Login failed','error');}
-  }catch(err){showToast('Network error','error');}
+  }catch(err){
+    showToast(err.message||'Network error','error');
+  }
   btn.disabled=false;text.textContent='Sign In';spin.classList.add('hidden');
 });
 </script>

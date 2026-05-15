@@ -81,6 +81,9 @@ function verifyCsrfToken(string $token): bool {
 // Response Helpers
 // ============================================================
 function jsonResponse(array $data, int $statusCode = 200): void {
+    if (ob_get_length() > 0) {
+        ob_clean();
+    }
     http_response_code($statusCode);
     header('Content-Type: application/json');
     header('X-Content-Type-Options: nosniff');
