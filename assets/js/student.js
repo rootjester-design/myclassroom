@@ -328,7 +328,9 @@ async function submitTutorRating(tutorId) {
 // ── Payment ────────────────────────────────────────────
 function openPayment(courseId, title, price) {
   document.getElementById('pay-course-id').value = courseId;
-  document.getElementById('paymentCourseInfo').innerHTML = `<strong>${title}</strong><br> <br>
+  document.getElementById('paymentCourseInfo').innerHTML = `<strong>${title}</strong>
+  <br>
+  <br>
   Amount: <strong>Rs. ${parseFloat(price).toLocaleString()}</strong>`;
   document.getElementById('slipPreview').style.display='none';
   document.getElementById('slipFile').value='';
