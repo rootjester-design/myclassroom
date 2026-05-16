@@ -198,6 +198,58 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
     return ['success' => false, 'message' => $error];
 }
 
+function sendSms(string $phone, string $message): array {
+    $formattedPhone = formatPhone($phone);
+    $payload = json_encode([
+        'recipient' => $formattedPhone,
+        'sender_id' => TEXTLK_SENDER_ID,
+        'message' => $message,
+    ]);
+
+    if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY') {
+        return ['success' => true, 'message' => 'SMS sent (dev mode)'];
+    }
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init('https://app.text.lk/api/v3/sms/send');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Authorization: Bearer ' . TEXTLK_API_KEY],
+            CURLOPT_POSTFIELDS => $payload,
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+    } elseif (ini_get('allow_url_fopen')) {
+        $context = stream_context_create([
+            'http' => [
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/json\r\nAuthorization: Bearer " . TEXTLK_API_KEY . "\r\n",
+                'content' => $payload,
+                'ignore_errors' => true,
+            ],
+        ]);
+        $response = file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
+        $httpCode = null;
+        if (isset($http_response_header) && preg_match('#HTTP/\d\.\d\s+(\d{3})#', $http_response_header[0], $matches)) {
+            $httpCode = (int)$matches[1];
+        }
+    } else {
+        return ['success' => false, 'message' => 'PHP cURL is not installed and allow_url_fopen is disabled.'];
+    }
+
+    if ($httpCode === 200) {
+        return ['success' => true, 'message' => 'SMS sent successfully'];
+    }
+
+    $error = 'Failed to send SMS. Please try again.';
+    if (isset($response) && $response) {
+        $error = trim(strip_tags($response));
+    }
+    return ['success' => false, 'message' => $error];
+}
+
 function verifyOtp(string $phone, string $otp, string $purpose = 'register'): bool {
     $db = Database::getInstance();
     $record = $db->fetch(

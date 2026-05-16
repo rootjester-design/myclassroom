@@ -5,12 +5,11 @@ if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message
 $db = Database::getInstance(); $tid = $user['id'];
 $fname = sanitize($_POST['first_name']??'');
 $lname = sanitize($_POST['last_name']??'');
-$email = sanitize($_POST['email']??'');
 $curPass = $_POST['current_password']??'';
 $newPass = $_POST['new_password']??'';
 $conPass = $_POST['confirm_password']??'';
 if (!$fname||!$lname) jsonResponse(['success'=>false,'message'=>'Name required']);
-$db->execute("UPDATE tutors SET first_name=?,last_name=?,email=?,updated_at=datetime('now') WHERE id=?",[$fname,$lname,$email,$tid]);
+$db->execute("UPDATE tutors SET first_name=?,last_name=?,updated_at=datetime('now') WHERE id=?",[$fname,$lname,$tid]);
 if ($curPass) {
     $t = $db->fetch("SELECT password FROM tutors WHERE id=?",[$tid]);
     if (!password_verify($curPass,$t['password'])) jsonResponse(['success'=>false,'message'=>'Current password incorrect']);

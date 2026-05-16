@@ -7,7 +7,6 @@ $sid = $user['id'];
 
 $fname   = sanitize($_POST['first_name']??'');
 $lname   = sanitize($_POST['last_name']??'');
-$birthday= sanitize($_POST['birthday']??'');
 $address = sanitize($_POST['address']??'');
 $curPass = $_POST['current_password']??'';
 $newPass = $_POST['new_password']??'';
@@ -15,8 +14,8 @@ $conPass = $_POST['confirm_password']??'';
 
 if (!$fname||!$lname) jsonResponse(['success'=>false,'message'=>'Name fields are required']);
 
-$db->execute("UPDATE students SET first_name=?,last_name=?,birthday=?,address=?,updated_at=datetime('now') WHERE id=?",
-    [$fname,$lname,$birthday,$address,$sid]);
+$db->execute("UPDATE students SET first_name=?,last_name=?,address=?,updated_at=datetime('now') WHERE id=?",
+    [$fname,$lname,$address,$sid]);
 
 if ($curPass) {
     $student = $db->fetch("SELECT password FROM students WHERE id=?",[$sid]);

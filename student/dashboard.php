@@ -105,7 +105,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
             <div class="form-group"><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control" value="<?=htmlspecialchars($user['first_name'])?>"></div>
             <div class="form-group"><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control" value="<?=htmlspecialchars($user['last_name'])?>"></div>
           </div>
-          <div class="form-group"><label class="form-label">Birthday</label><input type="date" name="birthday" class="form-control" value="<?=htmlspecialchars($user['birthday']??'')?>"></div>
+          <div class="form-group"><label class="form-label">Birthday</label><input type="date" name="birthday" class="form-control" value="<?=htmlspecialchars($user['birthday']??'')?>" disabled><p class="fs-xs text-muted mt-2">Birthday cannot be changed after registration.</p></div>
           <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-control" value="<?=htmlspecialchars($user['address']??'')?>"></div>
           <div class="form-group"><label class="form-label">Phone</label><input type="text" class="form-control" value="<?=htmlspecialchars($user['phone'])?>" disabled></div>
           <div class="divider"></div>

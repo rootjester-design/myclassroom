@@ -179,7 +179,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
             <div class="form-group"><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control" value="<?=htmlspecialchars($user['first_name'])?>"></div>
             <div class="form-group"><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control" value="<?=htmlspecialchars($user['last_name'])?>"></div>
           </div>
-          <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?=htmlspecialchars($user['email']??'')?>"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" value="<?=htmlspecialchars($user['email']??'')?>" disabled><p class="fs-xs text-muted mt-2">Email is used for login and cannot be changed here.</p></div>
           <div class="divider"></div>
           <p class="fw-700 mb-12">Change Password</p>
           <div class="form-group"><label class="form-label">Current Password</label><input type="password" name="current_password" class="form-control"></div>

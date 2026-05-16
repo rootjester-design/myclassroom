@@ -21,6 +21,18 @@ if ($student && password_verify($password, $student['password'])) {
     loginUser($student, 'student');
     $db->execute("UPDATE students SET last_login=datetime('now') WHERE id=?", [$student['id']]);
     logActivity((int)$student['id'],'student','login','Student logged in');
+
+    if (!empty($student['birthday']) && date('m-d', strtotime($student['birthday'])) === date('m-d')) {
+        $already = $db->fetch("SELECT id FROM notifications WHERE user_id=? AND user_type='student' AND title='Happy Birthday!' AND date(created_at)=date('now')", [$student['id']]);
+        if (!$already) {
+            $message = "Happy Birthday, {$student['first_name']}! 🎉 Wishing you a great year of learning with MyClassroom.";
+            $smsResult = sendSms($student['phone'], $message);
+            if ($smsResult['success']) {
+                createNotification($student['id'], 'student', 'Happy Birthday!', 'Enjoy your special day with a birthday greeting from MyClassroom.', 'success');
+            }
+        }
+    }
+
     jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/student/dashboard.php']);
 }
 

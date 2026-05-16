@@ -97,15 +97,33 @@ async function loadMyCourses() {
 
 // ── Course Detail ──────────────────────────────────────
 async function openCourseDetail(courseId) {
-  openModal('courseModal');
-  document.getElementById('courseModalBody').innerHTML='<div class="flex-center" style="padding:40px"><div class="spinner"></div></div>';
+  window.location.href = `../student/course.php?id=${courseId}`;
+}
+
+async function loadCoursePage() {
+  const container = document.getElementById('coursePageBody');
+  const title = document.getElementById('coursePageTitle');
+  if (!container || !title) return;
+  const params = new URLSearchParams(window.location.search);
+  const courseId = parseInt(params.get('id') || '', 10);
+  if (!courseId) {
+    title.textContent = 'Course not found';
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Course not found.</p></div>';
+    return;
+  }
+  title.textContent = 'Loading course...';
+  container.innerHTML = '<div class="flex-center" style="padding:40px"><div class="spinner"></div></div>';
   try {
     const res = await fetch(`../api/student/course-detail.php?id=${courseId}`);
     const data = await res.json();
-    if (!data.success) { document.getElementById('courseModalBody').innerHTML=`<div class="alert alert-error">${data.message}</div>`; return; }
+    if (!data.success) {
+      title.textContent = 'Course unavailable';
+      container.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
+      return;
+    }
     const c = data.course;
-    document.getElementById('courseModalTitle').textContent = c.title;
-    document.getElementById('courseModalBody').innerHTML = `
+    title.textContent = c.title;
+    container.innerHTML = `
       <div class="course-detail-tabs" id="cdTabs">
         <button class="course-tab-btn active" onclick="cdTab('recordings',this)">🎬 Recordings</button>
         <button class="course-tab-btn" onclick="cdTab('zoom',this)">📹 Live Classes</button>
@@ -114,14 +132,32 @@ async function openCourseDetail(courseId) {
         <button class="course-tab-btn" onclick="cdTab('assignments',this)">📝 Assignments</button>
         <button class="course-tab-btn" onclick="cdTab('notes',this)">📓 Notes</button>
       </div>
+      <div class="card p-20 mb-20">
+        <div class="flex-between flex-wrap" style="gap:12px">
+          <div>
+            <div class="fw-700 fs-lg">${c.title}</div>
+            <div class="fs-sm text-muted">Tutor: ${c.tutor_name}</div>
+            <div class="fs-sm text-muted mt-8">${c.description||''}</div>
+          </div>
+          <div class="text-right">
+            <div class="badge badge-green">Enrolled</div>
+            <div class="fs-sm text-muted mt-8">Progress: ${c.progress||0}%</div>
+          </div>
+        </div>
+      </div>
       <div id="cd-recordings">${renderRecordings(data.recordings||[])}</div>
       <div id="cd-zoom" class="hidden">${renderZoomList(data.zoom||[])}</div>
       <div id="cd-materials" class="hidden">${renderMaterials(data.materials||[])}</div>
       <div id="cd-announcements" class="hidden">${renderCourseAnn(data.announcements||[])}</div>
       <div id="cd-assignments" class="hidden">${renderAssignments(data.assignments||[])}</div>
       <div id="cd-notes" class="hidden">${renderNotes(data.notes||[], courseId)}</div>`;
-  } catch(e) { document.getElementById('courseModalBody').innerHTML='<div class="alert alert-error">Failed to load course</div>'; }
+  } catch(e) {
+    title.textContent = 'Failed to load course';
+    container.innerHTML = '<div class="alert alert-error">Failed to load course content.</div>';
+  }
 }
+
+document.addEventListener('DOMContentLoaded', loadCoursePage);
 
 function cdTab(name, el) {
   document.querySelectorAll('#courseModalBody [id^="cd-"]').forEach(t=>t.classList.add('hidden'));
