@@ -180,6 +180,7 @@ class Database {
                 description TEXT,
                 thumbnail TEXT,
                 price REAL DEFAULT 0,
+                is_free INTEGER DEFAULT 0,
                 monthly_fee REAL DEFAULT 0,
                 duration TEXT,
                 level TEXT DEFAULT 'beginner',
@@ -390,6 +391,21 @@ class Database {
                 FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
             );
         ");
+
+        // Run simple migration to add is_free column if it doesn't exist (for existing databases)
+        try {
+            $cols = $this->pdo->query("PRAGMA table_info(courses)")->fetchAll(PDO::FETCH_ASSOC);
+            $hasIsFree = false;
+            foreach ($cols as $col) {
+                if (isset($col['name']) && $col['name'] === 'is_free') { $hasIsFree = true; break; }
+            }
+            if (!$hasIsFree) {
+                $this->pdo->exec("ALTER TABLE courses ADD COLUMN is_free INTEGER DEFAULT 0");
+            }
+        } catch (PDOException $e) {
+            // Migration failure should not break the app; log and continue
+            error_log('Migration warning: failed to ensure is_free column: '.$e->getMessage());
+        }
 
         // Seed default super admin
         $admin = $this->fetch("SELECT id FROM admins WHERE email = ?", [SUPER_ADMIN_DEFAULT_EMAIL]);

@@ -12,6 +12,10 @@ $price      = (float)($_POST['price']??0);
 $duration   = sanitize($_POST['duration']??'');
 $editId     = (int)($_POST['course_id_edit']??0);
 
+// Free/Paid selection: if tutor marks course free, force price to 0
+$isFree = isset($_POST['is_free']) && $_POST['is_free'] === '1';
+if ($isFree) $price = 0;
+
 // Use course_id hidden field for edit detection
 $editId = (int)($_POST['course_id']??0);
 $isEdit = $editId > 0;
@@ -29,9 +33,9 @@ if ($isEdit) {
     $existing = $db->fetch("SELECT * FROM courses WHERE id=? AND tutor_id=?",[$editId,$tid]);
     if (!$existing) jsonResponse(['success'=>false,'message'=>'Course not found']);
     $thumbSql = $thumbnail ? ",thumbnail=?" : "";
-    $params = [$title,$desc,$price,$duration,$editId];
-    if ($thumbnail) array_splice($params,-1,0,[$thumbnail]);
-    $db->execute("UPDATE courses SET title=?,description=?,price=?,duration=?{$thumbSql},updated_at=datetime('now') WHERE id=?", $params);
+    $params = [$title,$desc,$price, $isFree ? 1 : 0,$duration,$editId];
+    if ($thumbnail) array_splice($params,-2,0,[$thumbnail]);
+    $db->execute("UPDATE courses SET title=?,description=?,price=?,is_free=?,duration=?{$thumbSql},updated_at=datetime('now') WHERE id=?", $params);
     jsonResponse(['success'=>true,'message'=>'Course updated']);
 }
 
@@ -47,6 +51,6 @@ while ($db->fetch("SELECT id FROM courses WHERE slug=?",[$slug])) {
     $counter++;
 }
 
-$db->insert("INSERT INTO courses (tutor_id,title,slug,description,price,duration,thumbnail) VALUES (?,?,?,?,?,?,?)",
-    [$tid,$title,$slug,$desc,$price,$duration,$thumbnail]);
+$db->insert("INSERT INTO courses (tutor_id,title,slug,description,price,is_free,duration,thumbnail) VALUES (?,?,?,?,?,?,?,?)",
+    [$tid,$title,$slug,$desc,$price,$isFree ? 1 : 0,$duration,$thumbnail]);
 jsonResponse(['success'=>true,'message'=>'Course created successfully']);

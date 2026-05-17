@@ -51,7 +51,7 @@ async function loadCourses(){
   populateCourseSelects();
   const el=document.getElementById('courses-grid');
   if(!myCourses.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📚</div><h3>No courses yet</h3><button class="btn btn-primary mt-16" onclick="openModal(\'addCourseModal\')">Add Your First Course</button></div>';return;}
-  el.innerHTML=myCourses.map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">📚</div>`}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="fs-xs text-muted mt-4">${c.duration||''}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div><div class="mt-8"><span class="badge ${c.is_active?'badge-green':'badge-gray'}">${c.is_active?'Active':'Inactive'}</span></div></div><div class="course-card-footer" style="gap:6px"><button class="btn btn-outline btn-sm" onclick="editCourse(${c.id})"><i class="fa fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})"><i class="fa fa-trash"></i></button></div></div>`).join('');
+  el.innerHTML=myCourses.map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">📚</div>`}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="fs-xs text-muted mt-4">${c.duration||''}</div><div class="course-card-price">${parseFloat(c.price||0) > 0 ? 'Rs. '+parseFloat(c.price).toLocaleString() : 'Free'}</div><div class="mt-8"><span class="badge ${c.is_active?'badge-green':'badge-gray'}">${c.is_active?'Active':'Inactive'}</span></div></div><div class="course-card-footer" style="gap:6px"><button class="btn btn-outline btn-sm" onclick="editCourse(${c.id})"><i class="fa fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})"><i class="fa fa-trash"></i></button></div></div>`).join('');
 }
 
 function populateCourseSelects(){
@@ -154,6 +154,18 @@ async function editCourse(id){
   const f=document.getElementById('courseForm');
   f.title.value=course.title;f.description.value=course.description||'';
   f.price.value=course.price||0;
+  try {
+    const freeRadio = document.querySelector('#courseForm input[name="is_free"][value="1"]');
+    const paidRadio = document.querySelector('#courseForm input[name="is_free"][value="0"]');
+    const priceInput = document.querySelector('#courseForm input[name="price"]');
+    if (parseFloat(course.price) === 0) {
+      if (freeRadio) freeRadio.checked = true;
+      if (priceInput) priceInput.disabled = true;
+    } else {
+      if (paidRadio) paidRadio.checked = true;
+      if (priceInput) priceInput.disabled = false;
+    }
+  } catch(e){}
   f.duration.value=course.duration||'';
   openModal('addCourseModal');
 }
@@ -257,5 +269,26 @@ if (courseForm) {
     btn.disabled=false;
   });
 }
+
+// Toggle price input when Free/Paid selection changes
+(() => {
+  const frm = document.getElementById('courseForm');
+  if (!frm) return;
+  const priceInput = frm.querySelector('input[name="price"]');
+  const radios = frm.querySelectorAll('input[name="is_free"]');
+  function updatePrice() {
+    const free = frm.querySelector('input[name="is_free"]:checked')?.value === '1';
+    if (free) {
+      if (priceInput) { priceInput.value = 0; priceInput.disabled = true; }
+    } else {
+      if (priceInput) priceInput.disabled = false;
+    }
+  }
+  radios.forEach(r => r.addEventListener('change', updatePrice));
+  // ensure initial state
+  updatePrice();
+  // also re-enable price after form reset
+  frm.addEventListener('reset', () => { if (priceInput) priceInput.disabled = false; });
+})();
 
 loadOverview();loadCourses();
