@@ -86,8 +86,6 @@ async function loadMyCourses() {
         <div class="course-card-body">
           <div class="course-card-title">${c.title}</div>
           <div class="course-card-tutor"><i class="fa fa-user-tie"></i> ${c.tutor_name}</div>
-          <div class="mt-12"><div class="flex-between mb-4"><span class="fs-xs text-muted">Progress</span><span class="fs-xs fw-600">${c.progress||0}%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${c.progress||0}%"></div></div></div>
           <div class="mt-12"><span class="badge ${c.status==='active'?'badge-green':'badge-yellow'}">${c.status}</span></div>
         </div>
         <div class="course-card-footer"><button class="btn btn-primary btn-sm btn-full" onclick="openCourseDetail(${c.id})">Enter Course</button></div>
@@ -141,7 +139,6 @@ async function loadCoursePage() {
           </div>
           <div class="text-right">
             <div class="badge badge-green">Enrolled</div>
-            <div class="fs-sm text-muted mt-8">Progress: ${c.progress||0}%</div>
           </div>
         </div>
       </div>
@@ -243,11 +240,14 @@ function renderStoreTutors(list) {
   const el = document.getElementById('store-tutors');
   if(!list.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">👨‍🏫</div><p>No tutors found</p></div>';return;}
   el.innerHTML = list.map(t=>`
-    <div class="card p-20" onclick="window.location.href='../student/tutor-profile.php?id=${t.id}'" style="cursor:pointer;text-align:center">
-      <div style="margin-bottom:12px">${t.profile_image?`<img src="${t.profile_image}" class="avatar avatar-xl" style="border:3px solid var(--primary);border-radius:50%;object-fit:cover">`:`<div class="avatar avatar-xl" style="border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;background:var(--primary-bg);color:var(--primary);margin:0 auto">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}</div>
-      <div class="fw-700">${t.display_name||t.first_name+' '+t.last_name}</div>
-      <div class="fs-sm text-muted">${t.subjects||'General'}</div>
-      <div class="stars mt-8 flex-center justify-content-center">${stars(t.rating||0)} <span class="fs-xs text-muted ml-4">(${t.total_students||0})</span></div>
+    <div class="card" onclick="window.location.href='../student/tutor-profile.php?id=${t.id}'" style="cursor:pointer;overflow:hidden;display:flex;flex-direction:column;height:320px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.06)'">
+      <div style="flex:1;width:100%;background:#f5f5f5">
+        ${t.profile_image?`<img src="${t.profile_image}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--primary-bg);color:var(--primary);font-size:2.5rem;font-weight:800">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}
+      </div>
+      <div style="padding:20px;background:#fff;text-align:center">
+        <div class="fw-700" style="font-size:1.1rem;color:#222;margin-bottom:4px">${t.display_name||t.first_name+' '+t.last_name}</div>
+        <div class="fs-sm text-muted">${t.subjects||'General'}</div>
+      </div>
     </div>`).join('');
 }
 
@@ -263,10 +263,9 @@ function renderStoreCourses(list) {
         <p class="fs-sm text-muted mt-8">${(c.description||'').substring(0,80)}...</p>
         ${c.duration?`<div class="fs-xs text-muted mt-4"><i class="fa fa-clock"></i> ${c.duration}</div>`:''}
         <div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div>
-        ${c.monthly_fee>0?`<div class="fs-xs text-muted">Monthly: Rs. ${parseFloat(c.monthly_fee).toLocaleString()}</div>`:''}
       </div>
       <div class="course-card-footer">
-        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title}',${c.price})">Enroll Now</button>`}
+        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll Now</button>`}
       </div>
     </div>`).join('');
 }
@@ -293,12 +292,16 @@ async function submitTutorRating(tutorId) {
 }
 
 // ── Payment ────────────────────────────────────────────
-function openPayment(courseId, title, price) {
+function openPayment(courseId, title, price, thumbnail, description) {
   document.getElementById('pay-course-id').value = courseId;
-  document.getElementById('paymentCourseInfo').innerHTML = `<strong>${title}</strong>
-  <br>
-  <br>
-  Amount: <strong>Rs. ${parseFloat(price).toLocaleString()}</strong>`;
+  let thumbHtml = thumbnail && thumbnail !== 'null' && thumbnail !== 'undefined' ? `<img src="${thumbnail}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px">` : '';
+  let descHtml = description && description !== 'null' && description !== 'undefined' ? `<p class="fs-sm text-muted mb-8">${description}</p>` : '';
+  document.getElementById('paymentCourseInfo').innerHTML = `
+    ${thumbHtml}
+    <div class="fw-700 fs-lg mb-4">${title}</div>
+    ${descHtml}
+    <div class="mt-8">Amount: <strong class="text-primary fs-lg">Rs. ${parseFloat(price).toLocaleString()}</strong></div>
+  `;
   document.getElementById('slipPreview').style.display='none';
   document.getElementById('slipFile').value='';
   openModal('paymentModal');
@@ -334,6 +337,22 @@ document.getElementById('settingsForm').addEventListener('submit', async e => {
   } catch(err){showToast('Network error','error');}
   btn.disabled=false; btn.innerHTML='<i class="fa fa-save"></i> Save Changes';
 });
+
+const siteReviewForm = document.getElementById('siteReviewForm');
+if (siteReviewForm) {
+  siteReviewForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled=true; btn.textContent='Submitting...';
+    try {
+      const res = await fetch('../api/student/submit-site-review.php',{method:'POST',body:new FormData(e.target)});
+      const d = await res.json();
+      if(d.success) { showToast('Review submitted successfully!','success'); e.target.reset(); }
+      else showToast(d.message||'Failed','error');
+    } catch(err){showToast('Network error','error');}
+    btn.disabled=false; btn.textContent='Submit Site Review';
+  });
+}
 
 async function uploadProfilePic(input) {
   const file = input.files[0];
@@ -402,4 +421,14 @@ async function markAllRead() {
 }
 
 // ── Init ───────────────────────────────────────────────
-loadHome();
+function init() {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  if (tab && tabTitles[tab]) {
+    switchTab(tab, null);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else {
+    loadHome();
+  }
+}
+init();

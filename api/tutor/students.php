@@ -5,7 +5,7 @@ $db = Database::getInstance();
 $tid = $user['id'];
 $limit = (int)($_GET['limit'] ?? 100);
 $students = $db->fetchAll("
-    SELECT s.id,s.first_name,s.last_name,s.phone,s.student_id,e.enrolled_at,e.progress,c.title AS course_title
+    SELECT s.id,s.first_name,s.last_name,s.phone,s.student_id,s.address,e.enrolled_at,e.progress,c.title AS course_title
     FROM enrollments e
     JOIN students s ON s.id=e.student_id
     JOIN courses c ON c.id=e.course_id

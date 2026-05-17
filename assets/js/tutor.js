@@ -51,7 +51,7 @@ async function loadCourses(){
   populateCourseSelects();
   const el=document.getElementById('courses-grid');
   if(!myCourses.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📚</div><h3>No courses yet</h3><button class="btn btn-primary mt-16" onclick="openModal(\'addCourseModal\')">Add Your First Course</button></div>';return;}
-  el.innerHTML=myCourses.map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="fs-xs text-muted mt-4">${c.duration||''}  ${c.level}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div><div class="mt-8"><span class="badge ${c.is_active?'badge-green':'badge-gray'}">${c.is_active?'Active':'Inactive'}</span></div></div><div class="course-card-footer" style="gap:6px"><button class="btn btn-outline btn-sm" onclick="editCourse(${c.id})"><i class="fa fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})"><i class="fa fa-trash"></i></button></div></div>`).join('');
+  el.innerHTML=myCourses.map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="fs-xs text-muted mt-4">${c.duration||''}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div><div class="mt-8"><span class="badge ${c.is_active?'badge-green':'badge-gray'}">${c.is_active?'Active':'Inactive'}</span></div></div><div class="course-card-footer" style="gap:6px"><button class="btn btn-outline btn-sm" onclick="editCourse(${c.id})"><i class="fa fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})"><i class="fa fa-trash"></i></button></div></div>`).join('');
 }
 
 function populateCourseSelects(){
@@ -65,7 +65,7 @@ async function loadStudents(){
   const d=await api('../api/tutor/students.php');
   const tb=document.getElementById('students-tbody');
   if(!(d.data||[]).length){tb.innerHTML='<tr><td colspan="5" class="text-center text-muted" style="padding:40px">No students yet</td></tr>';return;}
-  tb.innerHTML=d.data.map(s=>`<tr><td><div class="fw-600">${s.first_name} ${s.last_name}</div><div class="fs-xs text-muted">${s.student_id||''}</div></td><td>${s.phone}</td><td>${s.course_title}</td><td class="fs-xs">${new Date(s.enrolled_at).toLocaleDateString()}</td><td><div class="progress-bar" style="min-width:80px"><div class="progress-fill" style="width:${s.progress||0}%"></div></div><span class="fs-xs">${s.progress||0}%</span></td></tr>`).join('');
+  tb.innerHTML=d.data.map(s=>`<tr><td><div class="fw-600">${s.first_name} ${s.last_name}</div><div class="fs-xs text-muted">${s.student_id||''}</div></td><td>${s.phone}</td><td>${s.address||'-'}</td><td>${s.course_title}</td><td class="fs-xs">${new Date(s.enrolled_at).toLocaleDateString()}</td></tr>`).join('');
 }
 
 let currentPayFilter='pending';
@@ -153,18 +153,13 @@ async function editCourse(id){
   document.getElementById('editCourseId').value=id;
   const f=document.getElementById('courseForm');
   f.title.value=course.title;f.description.value=course.description||'';
-  f.price.value=course.price||0;f.monthly_fee.value=course.monthly_fee||0;
-  f.duration.value=course.duration||'';f.level.value=course.level||'beginner';
+  f.price.value=course.price||0;
+  f.duration.value=course.duration||'';
   openModal('addCourseModal');
 }
 
 // Form handlers
-document.getElementById('courseForm').addEventListener('submit',async e=>{
-  e.preventDefault();const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;
-  const d=await api('../api/tutor/save-course.php',{method:'POST',body:new FormData(e.target)});
-  if(d.success){showToast('Course saved!','success');closeModal('addCourseModal');e.target.reset();document.getElementById('editCourseId').value='';loadCourses();}
-  else showToast(d.message||'Failed','error');btn.disabled=false;
-});
+// Form handlers
 
 ['zoomForm','recordingForm','materialForm','announcementForm'].forEach(fid=>{
   document.getElementById(fid).addEventListener('submit',async e=>{

@@ -379,6 +379,16 @@ class Database {
                 updated_at TEXT DEFAULT (datetime('now')),
                 FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
             );
+
+            CREATE TABLE IF NOT EXISTS site_reviews (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_id INTEGER NOT NULL,
+                rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+                review TEXT NOT NULL,
+                is_featured INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (datetime('now')),
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+            );
         ");
 
         // Seed default super admin

@@ -70,7 +70,6 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
         <div class="card p-20"><h3 class="section-title" style="font-size:1rem">📢 Announcements</h3><div id="home-announcements"><div class="skeleton" style="height:60px;margin-bottom:10px"></div><div class="skeleton" style="height:60px"></div></div></div>
         <div class="card p-20"><h3 class="section-title" style="font-size:1rem">🎬 Upcoming Live Classes</h3><div id="home-zoom"><div class="skeleton" style="height:60px;margin-bottom:10px"></div><div class="skeleton" style="height:60px"></div></div></div>
       </div>
-      <div class="card p-20 mt-20"><h3 class="section-title" style="font-size:1rem">📊 Course Progress</h3><div id="home-progress" class="grid-3"></div></div>
     </div>
     <!-- COURSES -->
     <div id="tab-courses" class="tab-content">
@@ -114,6 +113,16 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
           <div class="form-group"><label class="form-label">New Password</label><input type="password" name="new_password" class="form-control"></div>
           <div class="form-group"><label class="form-label">Confirm Password</label><input type="password" name="confirm_password" class="form-control"></div>
           <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-save"></i> Save Changes</button>
+        </form>
+      </div>
+
+      <div class="card p-24 mt-20" style="max-width:600px">
+        <h3 class="fw-700 mb-12">Review the Platform</h3>
+        <p class="fs-sm text-muted mb-16">Let us know what you think about MyClassroom.</p>
+        <form id="siteReviewForm">
+          <div class="form-group"><label class="form-label">Rating</label><select name="rating" class="form-control" required><option value="">Select rating</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
+          <div class="form-group"><label class="form-label">Review</label><textarea name="review" class="form-control" rows="3" placeholder="Share your feedback..." required></textarea></div>
+          <button type="submit" class="btn btn-outline btn-full">Submit Site Review</button>
         </form>
       </div>
     </div>

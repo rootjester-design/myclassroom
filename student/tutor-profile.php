@@ -25,8 +25,8 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
   <div class="sidebar-logo">My<span>Classroom</span></div>
   <nav class="sidebar-nav">
     <button class="nav-item" onclick="window.location.href='dashboard.php'"><span class="nav-icon"><i class="fa fa-home"></i></span> Home</button>
-    <button class="nav-item" onclick="window.location.href='dashboard.php#courses'"><span class="nav-icon"><i class="fa fa-book"></i></span> My Courses</button>
-    <button class="nav-item" onclick="window.location.href='dashboard.php#store'"><span class="nav-icon"><i class="fa fa-store"></i></span> Store</button>
+    <button class="nav-item" onclick="window.location.href='dashboard.php?tab=courses'"><span class="nav-icon"><i class="fa fa-book"></i></span> My Courses</button>
+    <button class="nav-item" onclick="window.location.href='dashboard.php?tab=store'"><span class="nav-icon"><i class="fa fa-store"></i></span> Store</button>
     <button class="nav-item" onclick="window.location.href='dashboard.php#settings'"><span class="nav-icon"><i class="fa fa-cog"></i></span> Settings</button>
   </nav>
   <div class="sidebar-footer">
@@ -39,7 +39,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
 <div class="main-content">
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
-      <button class="icon-btn" onclick="window.location.href='dashboard.php#store'" title="Back to store"><i class="fa fa-arrow-left"></i></button>
+      <button class="icon-btn" onclick="window.location.href='dashboard.php?tab=store'" title="Back to store"><i class="fa fa-arrow-left"></i></button>
       <button class="icon-btn" onclick="toggleSidebar()" id="menuBtn"><i class="fa fa-bars"></i></button>
       <span class="topbar-title" id="topbarTitle">Tutor Profile</span>
     </div>
@@ -79,6 +79,29 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
   <div class="notif-list" id="notifList"></div>
 </div>
 
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">💳 Submit Payment</span><span class="modal-close" onclick="closeModal('paymentModal')">×</span></div>
+    <div class="modal-body">
+      <div id="paymentCourseInfo" class="alert alert-info mb-16"></div>
+      <form id="paymentForm">
+        <input type="hidden" name="course_id" id="pay-course-id">
+        <div class="form-group"><label class="form-label">Payment Reference *</label><input type="text" name="payment_reference" class="form-control" placeholder="e.g. TXN123456" required></div>
+        <div class="form-group"><label class="form-label">Payment Slip *</label>
+          <div class="file-upload-area" onclick="document.getElementById('slipFile').click()">
+            <div class="upload-icon">📄</div><p>Click to upload slip</p><p class="fs-xs text-muted">JPG, PNG, PDF — Max 5MB</p>
+            <input type="file" id="slipFile" name="payment_slip" accept="image/*,.pdf" style="display:none" onchange="previewSlip(this)">
+          </div>
+          <img id="slipPreview" style="display:none;max-height:150px;margin-top:10px;border-radius:8px">
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2" placeholder="Optional notes..."></textarea></div>
+        <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-paper-plane"></i> Submit Payment</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="../assets/js/main.js"></script>
 <script src="../assets/js/student.js"></script>
 <script>
@@ -104,22 +127,23 @@ async function loadTutorProfilePage() {
         <div style="position:absolute;bottom:-50px;left:24px">${t.profile_image?`<img src="${t.profile_image}" style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;object-fit:cover">`:`<div style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--primary);font-weight:800">${name.substring(0,2).toUpperCase()}</div>`}</div>
       </div>
       <div class="mb-24"><h1 style="font-size:1.8rem;font-weight:800;margin-top:20px">${name}</h1>
-      <div class="stars">${stars(t.rating||0)} <span class="fs-sm text-muted">${t.total_students||0} students • ${t.total_students||'0'} courses</span></div>
       ${t.subjects?`<div class="chip mt-12" style="cursor:default">${t.subjects}</div>`:''}
       </div>
+      ${t.social_links?(() => {
+        try {
+          const links = JSON.parse(t.social_links);
+          if (Object.keys(links).length === 0) return '';
+          return '<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Social Links</h3><div style="display:flex;gap:12px">' + 
+            Object.entries(links).map(([platform, url]) => `<a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="text-transform:capitalize"><i class="fab fa-${platform.toLowerCase()}"></i> ${platform}</a>`).join('') + 
+            '</div></div>';
+        } catch(e) { return ''; }
+      })():''}
       ${t.description?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">About</h3><p>${t.description}</p></div>`:''}
       ${t.experience?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Experience</h3><p>${t.experience}</p></div>`:''}
       ${t.qualifications?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Qualifications</h3><p>${t.qualifications}</p></div>`:''}
       ${t.contact_info?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Contact</h3><p>${t.contact_info}</p></div>`:''}
-      <div class="card p-20 mb-20">
-        <h3 class="fw-700 mb-12">Leave a Review</h3>
-        ${d.user_rating?`<div class="fs-sm text-muted mb-12">Your last rating: ${stars(d.user_rating.rating)}${d.user_rating.review?` — ${d.user_rating.review}`:''}</div>`:''}
-        <div class="form-group"><label class="form-label">Rating</label><select id="tutorRatingSelect" class="form-control"><option value="">Select rating</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
-        <div class="form-group"><label class="form-label">Review</label><textarea id="tutorReviewText" class="form-control" rows="3" placeholder="Share your feedback..."></textarea></div>
-        <button class="btn btn-primary btn-full" onclick="submitTutorRating(${t.id})">Submit Review</button>
-      </div>
       <h2 class="section-title">Courses by ${name}</h2>
-      <div class="grid-3">${(d.courses||[]).map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div></div><div class="course-card-footer">${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="openPayment(${c.id},'${c.title}',${c.price})">Enroll</button>`}</div></div>`).join('')||'<p class="text-muted">No courses yet</p>'}</div>`;
+      <div class="grid-3">${(d.courses||[]).map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div></div><div class="course-card-footer">${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll</button>`}</div></div>`).join('')||'<p class="text-muted">No courses yet</p>'}</div>`;
   } catch(e) {
     container.innerHTML = '<div class="alert alert-error">Failed to load tutor profile.</div>';
   }

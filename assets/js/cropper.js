@@ -49,8 +49,15 @@ class ImageCropper {
     this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
     this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
     this.canvas.addEventListener('mouseup', () => this.onMouseUp());
+    this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
     this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
     
+    // Touch support for mobile
+    this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), {passive: false});
+    this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), {passive: false});
+    this.canvas.addEventListener('touchend', () => this.onMouseUp());
+    this.canvas.addEventListener('touchcancel', () => this.onMouseUp());
+
     const zoomSlider = container.querySelector('#cropperZoom');
     if (zoomSlider) {
       zoomSlider.addEventListener('input', (e) => {
@@ -96,6 +103,32 @@ class ImageCropper {
 
   onMouseUp() {
     this.isDragging = false;
+  }
+
+  onTouchStart(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      this.isDragging = true;
+      const rect = this.canvas.getBoundingClientRect();
+      this.dragStartX = e.touches[0].clientX - rect.left;
+      this.dragStartY = e.touches[0].clientY - rect.top;
+    }
+  }
+
+  onTouchMove(e) {
+    if (e.touches.length === 1 && this.isDragging) {
+      e.preventDefault();
+      const rect = this.canvas.getBoundingClientRect();
+      const x = e.touches[0].clientX - rect.left;
+      const y = e.touches[0].clientY - rect.top;
+      const dx = x - this.dragStartX;
+      const dy = y - this.dragStartY;
+      this.offsetX += dx / this.zoom;
+      this.offsetY += dy / this.zoom;
+      this.dragStartX = x;
+      this.dragStartY = y;
+      this.draw();
+    }
   }
 
   onWheel(e) {

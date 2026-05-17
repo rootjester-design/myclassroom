@@ -100,7 +100,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
     <!-- STUDENTS -->
     <div id="tab-students" class="tab-content">
       <div class="page-header"><h1>My Students</h1></div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Course</th><th>Enrolled</th><th>Progress</th></tr></thead><tbody id="students-tbody"></tbody></table></div></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Address</th><th>Course</th><th>Enrolled</th></tr></thead><tbody id="students-tbody"></tbody></table></div></div>
     </div>
 
     <!-- PAYMENTS -->
@@ -143,7 +143,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
     <div id="tab-profile" class="tab-content">
       <div class="page-header"><h1>My Public Profile</h1><p>This is what students see in the Store</p></div>
       <div class="card p-24" style="max-width:700px">
-        <div style="position:relative;height:140px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;margin-bottom:60px">
+        <div style="position:relative;height:140px;background:<?= $user['banner_image'] ? 'url('.htmlspecialchars($user['banner_image']).') center/cover' : 'linear-gradient(135deg,var(--primary),var(--primary-dark))' ?>;border-radius:12px;margin-bottom:60px">
           <label style="position:absolute;bottom:8px;right:8px;cursor:pointer" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:#fff">
             <i class="fa fa-camera"></i> Banner<input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
           </label>
@@ -203,14 +203,8 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
         <input type="hidden" name="course_id" id="editCourseId">
         <div class="form-group"><label class="form-label">Course Title *</label><input type="text" name="title" class="form-control" required></div>
         <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Price (Rs.)</label><input type="number" name="price" class="form-control" value="0" min="0"></div>
-          <div class="form-group"><label class="form-label">Monthly Fee (Rs.)</label><input type="number" name="monthly_fee" class="form-control" value="0" min="0"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 3 months"></div>
-          <div class="form-group"><label class="form-label">Level</label><select name="level" class="form-control"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
-        </div>
+        <div class="form-group"><label class="form-label">Price (Rs.)</label><input type="number" name="price" class="form-control" value="0" min="0"></div>
+        <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 3 months"></div>
         <div class="form-group"><label class="form-label">Thumbnail</label><input type="file" name="thumbnail" class="form-control" accept="image/*" onchange="prepareCourseThumbnail(this)"></div>
         <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-save"></i> Save Course</button>
       </form>
@@ -233,7 +227,20 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
         </div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">Scheduled At</label><input type="datetime-local" name="scheduled_at" class="form-control"></div>
-          <div class="form-group"><label class="form-label">Duration (minutes)</label><input type="number" name="duration_minutes" class="form-control" value="60"></div>
+          <div class="form-group"><label class="form-label">Duration</label>
+            <select name="duration_minutes" class="form-control">
+              <option value="60">1 Hour</option>
+              <option value="120">2 Hours</option>
+              <option value="180">3 Hours</option>
+              <option value="240">4 Hours</option>
+              <option value="300">5 Hours</option>
+              <option value="360">6 Hours</option>
+              <option value="420">7 Hours</option>
+              <option value="480">8 Hours</option>
+              <option value="540">9 Hours</option>
+              <option value="600">10 Hours</option>
+            </select>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-save"></i> Add Class</button>
       </form>

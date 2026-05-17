@@ -9,9 +9,7 @@ $courseId   = (int)($_POST['course_id']??0);
 $title      = sanitize($_POST['title']??'');
 $desc       = sanitize($_POST['description']??'');
 $price      = (float)($_POST['price']??0);
-$monthly    = (float)($_POST['monthly_fee']??0);
 $duration   = sanitize($_POST['duration']??'');
-$level      = sanitize($_POST['level']??'beginner');
 $editId     = (int)($_POST['course_id_edit']??0);
 
 // Use course_id hidden field for edit detection
@@ -31,9 +29,9 @@ if ($isEdit) {
     $existing = $db->fetch("SELECT * FROM courses WHERE id=? AND tutor_id=?",[$editId,$tid]);
     if (!$existing) jsonResponse(['success'=>false,'message'=>'Course not found']);
     $thumbSql = $thumbnail ? ",thumbnail=?" : "";
-    $params = [$title,$desc,$price,$monthly,$duration,$level,$editId];
+    $params = [$title,$desc,$price,$duration,$editId];
     if ($thumbnail) array_splice($params,-1,0,[$thumbnail]);
-    $db->execute("UPDATE courses SET title=?,description=?,price=?,monthly_fee=?,duration=?,level=?{$thumbSql},updated_at=datetime('now') WHERE id=?", $params);
+    $db->execute("UPDATE courses SET title=?,description=?,price=?,duration=?{$thumbSql},updated_at=datetime('now') WHERE id=?", $params);
     jsonResponse(['success'=>true,'message'=>'Course updated']);
 }
 
@@ -49,6 +47,6 @@ while ($db->fetch("SELECT id FROM courses WHERE slug=?",[$slug])) {
     $counter++;
 }
 
-$db->insert("INSERT INTO courses (tutor_id,title,slug,description,price,monthly_fee,duration,level,thumbnail) VALUES (?,?,?,?,?,?,?,?,?)",
-    [$tid,$title,$slug,$desc,$price,$monthly,$duration,$level,$thumbnail]);
+$db->insert("INSERT INTO courses (tutor_id,title,slug,description,price,duration,thumbnail) VALUES (?,?,?,?,?,?,?)",
+    [$tid,$title,$slug,$desc,$price,$duration,$thumbnail]);
 jsonResponse(['success'=>true,'message'=>'Course created successfully']);

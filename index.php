@@ -129,6 +129,42 @@ footer a{color:rgba(255,255,255,0.4);margin:0 12px;}
   </div>
 </div>
 
+<div class="features-section" style="background:#f9f9f9;border-top:1px solid #eee;border-bottom:1px solid #eee;">
+  <div class="section-header">
+    <h2>What Our Students Say</h2>
+    <p>Read real reviews from students learning on MyClassroom</p>
+  </div>
+  <?php
+  $reviews = $db->fetchAll("SELECT r.rating, r.review, r.created_at, s.first_name, s.last_name, s.profile_image FROM site_reviews r JOIN students s ON r.student_id = s.id ORDER BY r.id DESC LIMIT 6");
+  if ($reviews):
+  ?>
+  <div class="features-cards">
+    <?php foreach ($reviews as $rev): 
+      $name = htmlspecialchars($rev['first_name'] . ' ' . $rev['last_name']);
+    ?>
+    <div class="feat-card" style="background:#fff">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar avatar-md" style="background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700">
+          <?php if($rev['profile_image']): ?>
+            <img src="<?=htmlspecialchars($rev['profile_image'])?>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+          <?php else: ?>
+            <?=strtoupper(substr($rev['first_name'],0,1).substr($rev['last_name'],0,1))?>
+          <?php endif; ?>
+        </div>
+        <div>
+          <div style="font-weight:700"><?=$name?></div>
+          <div style="color:#f59e0b;font-size:0.85rem"><?=str_repeat('★', $rev['rating'])?><?=str_repeat('☆', 5 - $rev['rating'])?></div>
+        </div>
+      </div>
+      <p style="color:#555;font-size:0.95rem;line-height:1.6;font-style:italic">"<?=htmlspecialchars($rev['review'])?>"</p>
+    </div>
+    <?php endforeach; ?>
+  </div>
+  <?php else: ?>
+  <div style="text-align:center;color:#757575;padding:40px 0;">No reviews yet. Be the first to leave one!</div>
+  <?php endif; ?>
+</div>
+
 <div class="cta-section">
   <h2>Ready to Start Learning?</h2>
   <p>Join thousands of students already learning on MyClassroom. Register with your phone number in seconds.</p>
