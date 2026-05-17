@@ -82,7 +82,7 @@ async function loadMyCourses() {
     if (!data.data?.length) { el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📚</div><h3>No courses yet</h3><p>Visit the Store to enroll</p><button class="btn btn-primary mt-16" onclick="switchTab(\'store\',null)">Browse Store</button></div>'; return; }
     el.innerHTML = data.data.map(c=>`
       <div class="course-card">
-        <div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div>
+        <div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">📚</div>`}</div>
         <div class="course-card-body">
           <div class="course-card-title">${c.title}</div>
           <div class="course-card-tutor"><i class="fa fa-user-tie"></i> ${c.tutor_name}</div>
@@ -256,7 +256,7 @@ function renderStoreCourses(list) {
   if(!list.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📚</div><p>No courses found</p></div>';return;}
   el.innerHTML = list.map(c=>`
     <div class="course-card">
-      <div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div>
+      <div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">📚</div>`}</div>
       <div class="course-card-body">
         <div class="course-card-title">${c.title}</div>
         <div class="course-card-tutor"><i class="fa fa-user-tie"></i> ${c.tutor_name||'Tutor'}</div>

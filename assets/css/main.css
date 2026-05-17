@@ -376,10 +376,11 @@ tbody tr:hover { background:var(--gray-100); }
 }
 .course-card:hover { box-shadow:var(--shadow-lg); transform:translateY(-3px); }
 .course-card-thumb {
-  width:100%; aspect-ratio:16/9; object-fit:cover;
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
   background: linear-gradient(135deg, var(--primary-bg), rgba(229,57,53,0.15));
-  display:flex; align-items:center; justify-content:center;
-  font-size:3rem;
+  overflow: hidden;
 }
 .course-card-body { padding:18px; }
 .course-card-title { font-weight:700; font-size:1rem; margin-bottom:8px; }
