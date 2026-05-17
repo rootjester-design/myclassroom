@@ -198,7 +198,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
   <div class="modal" style="max-width:600px">
     <div class="modal-header"><span class="modal-title">Position & Crop Image</span><span class="modal-close" onclick="closeModal('imageCropperModal')">×</span></div>
     <div class="modal-body">
-      <div style="background:#000;border-radius:8px;overflow:hidden;margin-bottom:16px">
+      <div style="background:var(--gray-100);border-radius:8px;overflow:hidden;margin-bottom:16px;border:1px solid var(--gray-300)">
         <canvas id="cropperCanvas" width="500" height="500" style="display:block;width:100%;height:auto"></canvas>
       </div>
       <div class="form-group">

@@ -211,7 +211,7 @@ async function uploadBanner(input){
     if(d.success){showToast('Banner updated','success');location.reload();}else showToast(d.message||'Failed','error');
     window.onImageCropped = null;
   };
-  openImageCropper(file, { aspectRatio: 3 });
+  openImageCropper(file, { aspectRatio: 820 / 312 });
 }
 
 function prepareCourseThumbnail(input) {

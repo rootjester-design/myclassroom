@@ -73,7 +73,7 @@ class ImageCropper {
   }
 
   draw() {
-    this.ctx.fillStyle = '#000';
+    this.ctx.fillStyle = '#ffffff';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.save();
