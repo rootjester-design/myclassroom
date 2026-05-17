@@ -334,8 +334,8 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
   </div>
 </nav>
 
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/cropper.js"></script>
-<script src="../assets/js/tutor.js"></script>
+<script src="../assets/js/main.js?v=<?=time()?>"></script>
+<script src="../assets/js/cropper.js?v=<?=time()?>"></script>
+<script src="../assets/js/tutor.js?v=<?=time()?>"></script>
 </body>
 </html>
