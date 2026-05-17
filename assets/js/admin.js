@@ -70,7 +70,7 @@ async function loadCourses(){
   const d=await api('../api/admin/courses.php');
   const tb=document.getElementById('courses-tbody');
   if(!(d.data||[]).length){tb.innerHTML='<tr><td colspan="6" class="text-center text-muted" style="padding:40px">No courses</td></tr>';return;}
-  tb.innerHTML=d.data.map(c=>{const active = parseInt(c.is_active,10)===1;return `<tr><td class="fw-600">${c.title}</td><td class="fs-sm">${c.tutor_name}</td><td class="fw-600 text-primary">Rs.${parseFloat(c.price||0).toLocaleString()}</td><td>${c.total_students||0}</td><td><span class="badge ${active?'badge-green':'badge-gray'}">${active?'Active':'Inactive'}</span></td><td><button class="btn btn-danger btn-sm" onclick="adminDeleteCourse(${c.id})">🗑️ Delete</button></td></tr>`}).join('');
+  tb.innerHTML=d.data.map(c=>{const active = parseInt(c.is_active,10)===1;return `<tr><td class="fw-600">${c.title}</td><td class="fs-sm">${c.tutor_name}</td><td class="fw-600 text-primary">${parseFloat(c.price||0) > 0 ? 'Rs.'+parseFloat(c.price||0).toLocaleString() : '<span class="text-green fw-700">Free</span>'}</td><td>${c.total_students||0}</td><td><span class="badge ${active?'badge-green':'badge-gray'}">${active?'Active':'Inactive'}</span></td><td><button class="btn btn-danger btn-sm" onclick="adminDeleteCourse(${c.id})">🗑️ Delete</button></td></tr>`}).join('');
 }
 
 async function loadPayments(status='pending'){

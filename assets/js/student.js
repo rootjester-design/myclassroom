@@ -262,10 +262,10 @@ function renderStoreCourses(list) {
         <div class="course-card-tutor"><i class="fa fa-user-tie"></i> ${c.tutor_name||'Tutor'}</div>
         <p class="fs-sm text-muted mt-8">${(c.description||'').substring(0,80)}...</p>
         ${c.duration?`<div class="fs-xs text-muted mt-4"><i class="fa fa-clock"></i> ${c.duration}</div>`:''}
-        <div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div>
+        <div class="course-card-price">${parseFloat(c.price||0) > 0 ? 'Rs. ' + parseFloat(c.price).toLocaleString() : '<span class="text-green fw-700">Free</span>'}</div>
       </div>
       <div class="course-card-footer">
-        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll Now</button>`}
+        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:(parseFloat(c.price||0)>0?`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll Now</button>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();enrollFreeCourse(${c.id})">Enroll Now</button>`)}
       </div>
     </div>`).join('');
 }
@@ -325,6 +325,28 @@ document.getElementById('paymentForm').addEventListener('submit', async e => {
   } catch(err){showToast('Network error','error');}
   btn.disabled=false; btn.innerHTML='<i class="fa fa-paper-plane"></i> Submit Payment';
 });
+
+async function enrollFreeCourse(courseId) {
+  try {
+    const res = await fetch('../api/student/enroll-free.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: courseId})
+    });
+    const d = await res.json();
+    if(d.success) {
+      showToast('Enrolled successfully!','success');
+      if (document.getElementById('store-courses')) {
+        storeData.courses = []; storeData.tutors = [];
+        loadStore();
+      } else {
+        setTimeout(() => location.reload(), 1500);
+      }
+    } else {
+      showToast(d.message || 'Failed to enroll', 'error');
+    }
+  } catch(err) { showToast('Network error','error'); }
+}
 
 // ── Settings ───────────────────────────────────────────
 document.getElementById('settingsForm').addEventListener('submit', async e => {
