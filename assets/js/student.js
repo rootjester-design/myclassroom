@@ -294,13 +294,15 @@ async function submitTutorRating(tutorId) {
 // ── Payment ────────────────────────────────────────────
 function openPayment(courseId, title, price, thumbnail, description) {
   document.getElementById('pay-course-id').value = courseId;
-  let thumbHtml = thumbnail && thumbnail !== 'null' && thumbnail !== 'undefined' ? `<img src="${thumbnail}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px">` : '';
-  let descHtml = description && description !== 'null' && description !== 'undefined' ? `<p class="fs-sm text-muted mb-8">${description}</p>` : '';
+  let thumbHtml = thumbnail && thumbnail !== 'null' && thumbnail !== 'undefined' ? `<img src="${thumbnail}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : '';
+  let descHtml = description && description !== 'null' && description !== 'undefined' ? `<div class="fs-sm text-muted mt-4" style="line-height:1.4">${description}</div>` : '';
   document.getElementById('paymentCourseInfo').innerHTML = `
     ${thumbHtml}
-    <div class="fw-700 fs-lg mb-4">${title}</div>
-    ${descHtml}
-    <div class="mt-8">Amount: <strong class="text-primary fs-lg">Rs. ${parseFloat(price).toLocaleString()}</strong></div>
+    <div style="flex:1;min-width:0">
+      <div class="fw-700 fs-lg" style="color:var(--primary);line-height:1.2">${title}</div>
+      ${descHtml}
+      <div class="mt-8 fs-md" style="color:var(--gray-700)">Amount: <strong class="text-primary fs-lg">Rs. ${parseFloat(price).toLocaleString()}</strong></div>
+    </div>
   `;
   document.getElementById('slipPreview').style.display='none';
   document.getElementById('slipFile').value='';
