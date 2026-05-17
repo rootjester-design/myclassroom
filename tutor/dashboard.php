@@ -297,6 +297,27 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
   </div>
 </div>
 
+<!-- IMAGE CROPPER MODAL -->
+<div class="modal-overlay" id="imageCropperModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header"><span class="modal-title">Position & Crop Image</span><span class="modal-close" onclick="closeModal('imageCropperModal')">×</span></div>
+    <div class="modal-body">
+      <div style="background:#000;border-radius:8px;overflow:hidden;margin-bottom:16px">
+        <canvas id="cropperCanvas" width="500" height="500" style="display:block;width:100%;height:auto"></canvas>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Zoom</label>
+        <input type="range" id="cropperZoom" min="0.5" max="3" step="0.1" value="1" style="width:100%">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-outline btn-full" id="cropperReset" onclick="currentCropper.reset()"><i class="fa fa-redo"></i> Reset</button>
+        <button type="button" class="btn btn-primary btn-full" onclick="saveImage()"><i class="fa fa-check"></i> Save Image</button>
+      </div>
+      <p class="fs-xs text-muted mt-12 text-center">Drag to move • Scroll to zoom</p>
+    </div>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
     <button class="bottom-nav-item active" onclick="switchTab('overview',this)"><span class="bn-icon">📊</span><span>Overview</span></button>

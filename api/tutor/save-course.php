@@ -37,8 +37,18 @@ if ($isEdit) {
     jsonResponse(['success'=>true,'message'=>'Course updated']);
 }
 
-// New course
-$slug = strtolower(preg_replace('/[^a-z0-9]+/','-',$title)).'-'.time();
+// New course - generate unique slug
+$baseSlug = strtolower(preg_replace('/[^a-z0-9]+/','-',$title));
+$baseSlug = trim($baseSlug,'-'); // Remove leading/trailing dashes
+$slug = $baseSlug;
+$counter = 1;
+
+// Ensure slug is unique
+while ($db->fetch("SELECT id FROM courses WHERE slug=?",[$slug])) {
+    $slug = $baseSlug.'-'.$counter;
+    $counter++;
+}
+
 $db->insert("INSERT INTO courses (tutor_id,title,slug,description,price,monthly_fee,duration,level,thumbnail) VALUES (?,?,?,?,?,?,?,?,?)",
     [$tid,$title,$slug,$desc,$price,$monthly,$duration,$level,$thumbnail]);
 jsonResponse(['success'=>true,'message'=>'Course created successfully']);
