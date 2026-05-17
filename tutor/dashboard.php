@@ -80,7 +80,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
         <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value"><?=$stats['courses']?></div><div class="stat-label">My Courses</div></div>
         <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value"><?=$stats['pending']?></div><div class="stat-label">Pending Payments</div></div>
         <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value">Rs. <?=number_format($stats['revenue'],0)?></div><div class="stat-label">Total Revenue</div></div>
-        <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-value" id="tutorProfitStat">Rs. 0</div><div class="stat-label">Your Profit</div></div>
+        <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-value" id="tutorProfitStat">Rs. 0</div><div class="stat-label">Your Income</div></div>
       </div>
       <div class="grid-2">
         <div class="card p-20"><h3 class="section-title" style="font-size:1rem">⏳ Pending Payments</h3><div id="pending-payments-list"></div></div>
