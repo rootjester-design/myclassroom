@@ -13,7 +13,7 @@ $stats = [
   'students'  => $db->fetch("SELECT COUNT(DISTINCT student_id) c FROM enrollments WHERE tutor_id=?",[$tid])['c'],
   'courses'   => $db->fetch("SELECT COUNT(*) c FROM courses WHERE tutor_id=?",[$tid])['c'],
   'pending'   => $db->fetch("SELECT COUNT(*) c FROM payments WHERE tutor_id=? AND status='pending'",[$tid])['c'],
-  'revenue'   => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE tutor_id=? AND status='completed'",[$tid])['c'],
+  'revenue'   => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE tutor_id=? AND status='approved'",[$tid])['c'],
 ];
 $fullName = htmlspecialchars($user['first_name'].' '.$user['last_name']);
 $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],0,1));

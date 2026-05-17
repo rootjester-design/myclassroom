@@ -3,15 +3,15 @@ require_once '../../includes/helpers.php';
 $user = requireAuth('super_admin');
 $db = Database::getInstance();
 
-// Get total revenue from all completed payments
+// Get total revenue from all approved payments
 $totalRevenue = $db->fetch(
-    "SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE status = 'completed'"
+    "SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE status = 'approved'"
 )['total'] ?? 0;
 
 // Get admin income (30% of all payments by default, or as configured per tutor)
 $adminIncome = 0;
 $allPayments = $db->fetchAll(
-    "SELECT p.amount, p.tutor_id FROM payments p WHERE p.status = 'completed'"
+    "SELECT p.amount, p.tutor_id FROM payments p WHERE p.status = 'approved'"
 );
 
 foreach ($allPayments as $payment) {
@@ -33,7 +33,7 @@ $tutorBreakdown = $db->fetchAll(
             COALESCE(SUM(p.amount), 0) AS total_earned
      FROM tutors t
      LEFT JOIN tutor_commissions tc ON tc.tutor_id = t.id
-     LEFT JOIN payments p ON p.tutor_id = t.id AND p.status = 'completed'
+     LEFT JOIN payments p ON p.tutor_id = t.id AND p.status = 'approved'
      WHERE t.is_active = 1
      GROUP BY t.id
      ORDER BY total_earned DESC"

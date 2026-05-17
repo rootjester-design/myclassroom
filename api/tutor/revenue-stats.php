@@ -15,7 +15,7 @@ $commissionPercentage = ($commission && $commission['commission_percentage'])
 
 // Get total revenue from this tutor's courses
 $totalRevenue = $db->fetch(
-    "SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE tutor_id = ? AND status = 'completed'",
+    "SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE tutor_id = ? AND status = 'approved'",
     [$tutorId]
 )['total'] ?? 0;
 
@@ -27,7 +27,7 @@ $monthlyBreakdown = $db->fetchAll(
     "SELECT DATE(p.created_at) AS month, 
             COALESCE(SUM(p.amount), 0) AS amount
      FROM payments p
-     WHERE p.tutor_id = ? AND p.status = 'completed'
+     WHERE p.tutor_id = ? AND p.status = 'approved'
      GROUP BY DATE(p.created_at)
      ORDER BY DATE(p.created_at) DESC
      LIMIT 12"

@@ -12,7 +12,7 @@ $stats = [
   'students'    => $db->fetch("SELECT COUNT(*) c FROM students")['c'],
   'tutors'      => $db->fetch("SELECT COUNT(*) c FROM tutors")['c'],
   'courses'     => $db->fetch("SELECT COUNT(*) c FROM courses")['c'],
-  'revenue'     => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE status='completed'")['c'],
+  'revenue'     => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE status='approved'")['c'],
   'pending'     => $db->fetch("SELECT COUNT(*) c FROM payments WHERE status='pending'")['c'],
   'enrollments' => $db->fetch("SELECT COUNT(*) c FROM enrollments WHERE status='active'")['c'],
 ];
