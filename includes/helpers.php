@@ -282,7 +282,16 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
         return ['success' => false, 'message' => 'Invalid file type.'];
     }
 
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $mimeToExt = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/gif'  => 'gif',
+        'image/webp' => 'webp',
+        'application/pdf' => 'pdf'
+    ];
+    $ext = $mimeToExt[$mimeType] ?? pathinfo($file['name'], PATHINFO_EXTENSION);
+    if (empty($ext)) $ext = 'file';
+
     $filename = bin2hex(random_bytes(16)) . '.' . strtolower($ext);
     $uploadPath = UPLOAD_DIR . $subDir . '/';
 
