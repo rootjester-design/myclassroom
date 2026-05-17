@@ -33,7 +33,7 @@
 html {
   scroll-behavior:smooth;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   -webkit-text-size-adjust: 100%;
 }
 body {
