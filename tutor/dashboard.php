@@ -204,13 +204,17 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
         <div class="form-group"><label class="form-label">Course Title *</label><input type="text" name="title" class="form-control" required></div>
         <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
         <div class="form-row">
-          <div class="form-group" style="flex:1"><label class="form-label">Type</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="is_free" value="0" checked> Paid</label>
-              <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="is_free" value="1"> Free</label>
-            </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Type</label>
+            <select name="is_free" id="courseTypeSelect" class="form-control">
+              <option value="0">Paid</option>
+              <option value="1">Free</option>
+            </select>
           </div>
-          <div class="form-group" style="flex:1"><label class="form-label">Price (Rs.)</label><input type="number" id="coursePrice" name="price" class="form-control" value="0" min="0"></div>
+          <div class="form-group" id="coursePriceGroup" style="flex:1">
+            <label class="form-label">Price (Rs.)</label>
+            <input type="number" id="coursePrice" name="price" class="form-control" value="0" min="0">
+          </div>
         </div>
         <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 3 months"></div>
         <div class="form-group"><label class="form-label">Thumbnail</label><input type="file" name="thumbnail" class="form-control" accept="image/*" onchange="prepareCourseThumbnail(this)"></div>

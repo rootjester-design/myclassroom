@@ -34,41 +34,76 @@ class ImageCropper {
       };
       reader.readAsDataURL(imageFile);
 
+      // Ensure event listeners are attached after canvas exists
       this.setupEventListeners(container);
     });
   }
 
   setupCanvas() {
-    const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.width; // Square canvas
+    const parentRect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : { width: 500, height: 500 };
+    const w = Math.max(100, Math.round(parentRect.width));
+
+    this.canvas.width = w;
+    if (this.aspectRatio && typeof this.aspectRatio === 'number' && this.aspectRatio > 0) {
+      // aspectRatio = width / height
+      this.canvas.height = Math.max(100, Math.round(w / this.aspectRatio));
+    } else {
+      // default to square canvas
+      this.canvas.height = w;
+    }
+
+    // Start with zoom that fits the image into the canvas
     this.zoom = Math.min(this.canvas.width / this.image.width, this.canvas.height / this.image.height);
+    if (!isFinite(this.zoom) || this.zoom <= 0) this.zoom = 1;
+
+    // Center the image
+    this.offsetX = 0;
+    this.offsetY = 0;
   }
 
   setupEventListeners(container) {
-    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
-    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
-    this.canvas.addEventListener('mouseup', () => this.onMouseUp());
-    this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
-    this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
+    // Remove previous listeners if any
+    if (this._handlers) {
+      Object.keys(this._handlers).forEach(k => {
+        this.canvas.removeEventListener(k, this._handlers[k]);
+      });
+    }
+
+    this._handlers = {};
+    this._handlers.mousedown = (e) => this.onMouseDown(e);
+    this._handlers.mousemove = (e) => this.onMouseMove(e);
+    this._handlers.mouseup = () => this.onMouseUp();
+    this._handlers.mouseleave = () => this.onMouseUp();
+    this._handlers.wheel = (e) => this.onWheel(e);
+
+    this.canvas.addEventListener('mousedown', this._handlers.mousedown);
+    this.canvas.addEventListener('mousemove', this._handlers.mousemove);
+    this.canvas.addEventListener('mouseup', this._handlers.mouseup);
+    this.canvas.addEventListener('mouseleave', this._handlers.mouseleave);
+    this.canvas.addEventListener('wheel', this._handlers.wheel, { passive: false });
     
     // Touch support for mobile
-    this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), {passive: false});
-    this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), {passive: false});
-    this.canvas.addEventListener('touchend', () => this.onMouseUp());
-    this.canvas.addEventListener('touchcancel', () => this.onMouseUp());
+    this._handlers.touchstart = (e) => this.onTouchStart(e);
+    this._handlers.touchmove = (e) => this.onTouchMove(e);
+    this._handlers.touchend = () => this.onMouseUp();
+    this._handlers.touchcancel = () => this.onMouseUp();
+    this.canvas.addEventListener('touchstart', this._handlers.touchstart, { passive: false });
+    this.canvas.addEventListener('touchmove', this._handlers.touchmove, { passive: false });
+    this.canvas.addEventListener('touchend', this._handlers.touchend);
+    this.canvas.addEventListener('touchcancel', this._handlers.touchcancel);
 
     const zoomSlider = container.querySelector('#cropperZoom');
     if (zoomSlider) {
-      zoomSlider.addEventListener('input', (e) => {
-        this.zoom = parseFloat(e.target.value);
-        this.draw();
-      });
+      this._handlers.zoominput = (e) => { this.zoom = parseFloat(e.target.value); this.draw(); };
+      zoomSlider.addEventListener('input', this._handlers.zoominput);
+      // set initial slider value
+      zoomSlider.value = this.zoom.toFixed(2);
     }
 
     const resetBtn = container.querySelector('#cropperReset');
     if (resetBtn) {
-      resetBtn.addEventListener('click', () => this.reset());
+      this._handlers.resetclick = () => this.reset();
+      resetBtn.addEventListener('click', this._handlers.resetclick);
     }
   }
 
@@ -86,18 +121,22 @@ class ImageCropper {
 
   onMouseDown(e) {
     this.isDragging = true;
-    this.dragStartX = e.offsetX;
-    this.dragStartY = e.offsetY;
+    const rect = this.canvas.getBoundingClientRect();
+    this.dragStartX = (typeof e.offsetX === 'number') ? e.offsetX : (e.clientX - rect.left);
+    this.dragStartY = (typeof e.offsetY === 'number') ? e.offsetY : (e.clientY - rect.top);
   }
 
   onMouseMove(e) {
     if (!this.isDragging) return;
-    const dx = e.offsetX - this.dragStartX;
-    const dy = e.offsetY - this.dragStartY;
+    const rect = this.canvas.getBoundingClientRect();
+    const x = (typeof e.offsetX === 'number') ? e.offsetX : (e.clientX - rect.left);
+    const y = (typeof e.offsetY === 'number') ? e.offsetY : (e.clientY - rect.top);
+    const dx = x - this.dragStartX;
+    const dy = y - this.dragStartY;
     this.offsetX += dx / this.zoom;
     this.offsetY += dy / this.zoom;
-    this.dragStartX = e.offsetX;
-    this.dragStartY = e.offsetY;
+    this.dragStartX = x;
+    this.dragStartY = y;
     this.draw();
   }
 
@@ -135,7 +174,9 @@ class ImageCropper {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom + delta));
-    document.getElementById('cropperZoom').value = this.zoom.toFixed(2);
+    // update local zoom slider if present
+    const slider = this.canvas.parentElement ? this.canvas.parentElement.querySelector('#cropperZoom') : null;
+    if (slider) slider.value = this.zoom.toFixed(2);
     this.draw();
   }
 
@@ -143,7 +184,8 @@ class ImageCropper {
     this.zoom = Math.min(this.canvas.width / this.image.width, this.canvas.height / this.image.height);
     this.offsetX = 0;
     this.offsetY = 0;
-    document.getElementById('cropperZoom').value = this.zoom.toFixed(2);
+    const slider = this.canvas.parentElement ? this.canvas.parentElement.querySelector('#cropperZoom') : null;
+    if (slider) slider.value = this.zoom.toFixed(2);
     this.draw();
   }
 

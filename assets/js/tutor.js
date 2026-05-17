@@ -155,15 +155,17 @@ async function editCourse(id){
   f.title.value=course.title;f.description.value=course.description||'';
   f.price.value=course.price||0;
   try {
-    const freeRadio = document.querySelector('#courseForm input[name="is_free"][value="1"]');
-    const paidRadio = document.querySelector('#courseForm input[name="is_free"][value="0"]');
+    const typeSelect = document.querySelector('#courseForm select[name="is_free"]');
     const priceInput = document.querySelector('#courseForm input[name="price"]');
-    if (parseFloat(course.price) === 0) {
-      if (freeRadio) freeRadio.checked = true;
-      if (priceInput) priceInput.disabled = true;
+    const priceGroup = document.getElementById('coursePriceGroup');
+    // prefer explicit is_free flag from API when available
+    const isFreeFlag = (typeof course.is_free !== 'undefined') ? (parseInt(course.is_free) === 1) : (parseFloat(course.price) === 0);
+    if (typeSelect) typeSelect.value = isFreeFlag ? '1' : '0';
+    if (isFreeFlag) {
+      if (priceInput) priceInput.value = 0;
+      if (priceGroup) priceGroup.style.display = 'none';
     } else {
-      if (paidRadio) paidRadio.checked = true;
-      if (priceInput) priceInput.disabled = false;
+      if (priceGroup) priceGroup.style.display = '';
     }
   } catch(e){}
   f.duration.value=course.duration||'';
@@ -270,25 +272,27 @@ if (courseForm) {
   });
 }
 
-// Toggle price input when Free/Paid selection changes
+// Toggle price input when Free/Paid selection changes (using select)
 (() => {
   const frm = document.getElementById('courseForm');
   if (!frm) return;
   const priceInput = frm.querySelector('input[name="price"]');
-  const radios = frm.querySelectorAll('input[name="is_free"]');
+  const priceGroup = document.getElementById('coursePriceGroup');
+  const typeSelect = frm.querySelector('select[name="is_free"]');
   function updatePrice() {
-    const free = frm.querySelector('input[name="is_free"]:checked')?.value === '1';
+    const free = typeSelect && typeSelect.value === '1';
     if (free) {
-      if (priceInput) { priceInput.value = 0; priceInput.disabled = true; }
+      if (priceInput) priceInput.value = 0;
+      if (priceGroup) priceGroup.style.display = 'none';
     } else {
-      if (priceInput) priceInput.disabled = false;
+      if (priceGroup) priceGroup.style.display = '';
     }
   }
-  radios.forEach(r => r.addEventListener('change', updatePrice));
+  if (typeSelect) typeSelect.addEventListener('change', updatePrice);
   // ensure initial state
   updatePrice();
-  // also re-enable price after form reset
-  frm.addEventListener('reset', () => { if (priceInput) priceInput.disabled = false; });
+  // also reset UI after form reset
+  frm.addEventListener('reset', () => { if (priceGroup) priceGroup.style.display = ''; if (priceInput) priceInput.disabled = false; });
 })();
 
 loadOverview();loadCourses();
