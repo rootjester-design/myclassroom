@@ -429,6 +429,7 @@
   .grid-2 { grid-template-columns: 1fr; gap: 14px; }
   .grid-3 { grid-template-columns: 1fr; gap: 14px; }
   .grid-4 { grid-template-columns: repeat(2,1fr); gap: 12px; }
+  .grid-5 { grid-template-columns: repeat(2,1fr); gap: 12px; }
   .profile-panel, .notif-panel { top: 64px; right: 10px; }
   .course-detail-tabs { gap: 3px; }
   .course-tab-btn { padding: 7px 10px; font-size: 0.75rem; }

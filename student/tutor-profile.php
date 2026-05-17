@@ -123,8 +123,8 @@ async function loadTutorProfilePage() {
     const name = t.display_name||t.first_name+' '+t.last_name;
     document.getElementById('topbarTitle').textContent = name;
     container.innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;width:100%;aspect-ratio:820/312;margin-bottom:60px;position:relative;${t.banner_image?`background-image:url(${t.banner_image});background-size:cover;background-position:center`:''};overflow:visible">
-        <div style="position:absolute;bottom:-50px;left:24px">${t.profile_image?`<img src="${t.profile_image}" style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;object-fit:cover">`:`<div style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--primary);font-weight:800">${name.substring(0,2).toUpperCase()}</div>`}</div>
+      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;width:100%;height:clamp(150px, 25vw, 300px);margin-bottom:80px;position:relative;${t.banner_image?`background-image:url(${t.banner_image});background-size:cover;background-position:center`:''};overflow:visible">
+        <div style="position:absolute;bottom:-75px;left:40px;z-index:2">${t.profile_image?`<img src="${t.profile_image}" style="width:150px;height:150px;border-radius:50%;border:5px solid #fff;object-fit:cover;box-shadow:0 4px 10px rgba(0,0,0,0.1)">`:`<div style="width:150px;height:150px;border-radius:50%;border:5px solid #fff;background:#fff;display:flex;align-items:center;justify-content:center;font-size:3.5rem;color:var(--primary);font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,0.1)">${name.substring(0,2).toUpperCase()}</div>`}</div>
       </div>
       <div class="mb-24"><h1 style="font-size:1.8rem;font-weight:800;margin-top:20px">${name}</h1>
       ${t.subjects?`<div class="chip mt-12" style="cursor:default">${t.subjects}</div>`:''}

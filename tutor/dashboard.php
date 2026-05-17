@@ -143,14 +143,14 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
     <div id="tab-profile" class="tab-content">
       <div class="page-header"><h1>My Public Profile</h1><p>This is what students see in the Store</p></div>
       <div class="card p-24" style="max-width:700px">
-        <div style="position:relative;width:100%;aspect-ratio:820/312;background:<?= $user['banner_image'] ? 'url('.htmlspecialchars($user['banner_image']).') center/cover' : 'linear-gradient(135deg,var(--primary),var(--primary-dark))' ?>;border-radius:12px;margin-bottom:60px">
+        <div style="position:relative;width:100%;height:clamp(150px, 25vw, 300px);background:<?= $user['banner_image'] ? 'url('.htmlspecialchars($user['banner_image']).') center/cover' : 'linear-gradient(135deg,var(--primary),var(--primary-dark))' ?>;border-radius:12px;margin-bottom:80px">
           <label style="position:absolute;bottom:12px;right:12px;cursor:pointer;background:var(--white);color:var(--black);box-shadow:var(--shadow);border-radius:20px;padding:6px 14px;font-weight:600;font-size:0.85rem;" class="btn">
             <i class="fa fa-camera" style="margin-right:4px"></i> Banner<input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
           </label>
-          <div style="position:absolute;bottom:-44px;left:24px">
+          <div style="position:absolute;bottom:-75px;left:40px;z-index:2">
             <div style="position:relative;display:inline-block">
-              <div class="avatar avatar-xl" id="tutorAvatarPreview" style="border:4px solid #fff;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--primary);font-size:1.8rem"><?php if($user['profile_image']): ?><img src="<?=htmlspecialchars($user['profile_image'])?>" style="width:100%;height:100%;border-radius:50%;object-fit:cover"><?php else: echo $initial; endif; ?></div>
-              <label style="position:absolute;bottom:0;right:0;cursor:pointer;width:28px;height:28px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem">
+              <div class="avatar avatar-xl" id="tutorAvatarPreview" style="width:150px;height:150px;border-radius:50%;border:5px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;background:#fff;color:var(--primary);font-size:3.5rem"><?php if($user['profile_image']): ?><img src="<?=htmlspecialchars($user['profile_image'])?>" style="width:100%;height:100%;border-radius:50%;object-fit:cover"><?php else: echo $initial; endif; ?></div>
+              <label style="position:absolute;bottom:5px;right:5px;cursor:pointer;width:36px;height:36px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;box-shadow:0 2px 5px rgba(0,0,0,0.2)">
                 <i class="fa fa-camera"></i><input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadTutorAvatar(this)">
               </label>
             </div>

@@ -88,7 +88,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
         <button class="nav-tab active" onclick="storeView('tutors',this)">👨‍🏫 Tutors</button>
         <button class="nav-tab" onclick="storeView('courses',this)">📚 All Courses</button>
       </div>
-      <div id="store-tutors" class="grid-4"></div>
+      <div id="store-tutors" class="grid-5"></div>
       <div id="store-courses" class="grid-3 hidden"></div>
     </div>
     <!-- SETTINGS -->
