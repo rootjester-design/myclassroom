@@ -36,6 +36,7 @@ if (isLoggedIn() && getAuthUser()['role']==='tutor') redirect('/tutor/dashboard.
       <p class="auth-box-subtitle">Sign in to the administration panel</p>
       <form id="adminLoginForm" novalidate>
         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+        <input type="hidden" name="login_type" value="admin_tutor">
         <div class="form-group">
           <label class="form-label">Email or Phone</label>
           <div class="input-group">

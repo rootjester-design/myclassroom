@@ -52,6 +52,7 @@ if (isLoggedIn()) {
 
       <form id="loginForm" novalidate>
         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+        <input type="hidden" name="login_type" value="student">
 
         <div class="form-group">
           <label class="form-label">Phone Number</label>
