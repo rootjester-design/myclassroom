@@ -371,6 +371,14 @@ class Database {
                 FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
                 FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
             );
+
+            CREATE TABLE IF NOT EXISTS tutor_commissions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tutor_id INTEGER NOT NULL UNIQUE,
+                commission_percentage REAL DEFAULT 70,
+                updated_at TEXT DEFAULT (datetime('now')),
+                FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
+            );
         ");
 
         // Seed default super admin

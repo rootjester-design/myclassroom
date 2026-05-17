@@ -12,7 +12,7 @@ $stats = [
   'students'    => $db->fetch("SELECT COUNT(*) c FROM students")['c'],
   'tutors'      => $db->fetch("SELECT COUNT(*) c FROM tutors")['c'],
   'courses'     => $db->fetch("SELECT COUNT(*) c FROM courses")['c'],
-  'revenue'     => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE status='approved'")['c'],
+  'revenue'     => $db->fetch("SELECT COALESCE(SUM(amount),0) c FROM payments WHERE status='completed'")['c'],
   'pending'     => $db->fetch("SELECT COUNT(*) c FROM payments WHERE status='pending'")['c'],
   'enrollments' => $db->fetch("SELECT COUNT(*) c FROM enrollments WHERE status='active'")['c'],
 ];
@@ -39,6 +39,7 @@ $stats = [
     <button class="nav-item" onclick="switchTab('students',this)"><span class="nav-icon"><i class="fa fa-users"></i></span> Students</button>
     <button class="nav-item" onclick="switchTab('courses',this)"><span class="nav-icon"><i class="fa fa-book"></i></span> Courses</button>
     <button class="nav-item" onclick="switchTab('payments',this)"><span class="nav-icon"><i class="fa fa-credit-card"></i></span> Payments <span id="pendingBadge" class="nav-badge" style="<?=$stats['pending']>0?'':'display:none'?>"><?=$stats['pending']?></span></button>
+    <button class="nav-item" onclick="switchTab('revenue',this)"><span class="nav-icon"><i class="fa fa-chart-line"></i></span> 💰 Revenue</button>
     <button class="nav-item" onclick="switchTab('logs',this)"><span class="nav-icon"><i class="fa fa-shield-alt"></i></span> Activity Logs</button>
     <button class="nav-item" onclick="switchTab('settings',this)"><span class="nav-icon"><i class="fa fa-cog"></i></span> Settings</button>
   </nav>
@@ -126,6 +127,28 @@ $stats = [
       <div class="card"><div class="table-wrap"><table><thead><tr><th>User</th><th>Type</th><th>Action</th><th>Description</th><th>IP</th><th>Time</th></tr></thead><tbody id="logs-tbody"></tbody></table></div></div>
     </div>
 
+    <!-- REVENUE -->
+    <div id="tab-revenue" class="tab-content">
+      <h2 class="section-title mb-20">💰 Revenue Management</h2>
+      <div class="grid-2 mb-20">
+        <div class="stat-card" style="background:linear-gradient(135deg,#4caf50,#45a049)">
+          <div class="stat-icon" style="font-size:2rem">💵</div>
+          <div class="stat-value" id="adminIncomeValue">Rs. 0</div>
+          <div class="stat-label">Admin Income</div>
+        </div>
+        <div class="stat-card" style="background:linear-gradient(135deg,#2196f3,#1976d2)">
+          <div class="stat-icon" style="font-size:2rem">💰</div>
+          <div class="stat-value" id="totalRevenueValue">Rs. 0</div>
+          <div class="stat-label">Total Platform Revenue</div>
+        </div>
+      </div>
+      <div class="card p-20">
+        <h3 class="section-title" style="font-size:1rem">Tutor Commission Management</h3>
+        <p class="text-muted fs-sm mb-16">Set commission percentages for each tutor. The tutor keeps this percentage, admin keeps the rest.</p>
+        <div class="table-wrap"><table><thead><tr><th>Tutor</th><th>Total Earned</th><th>Commission %</th><th>Tutor Income</th><th>Admin Income</th><th>Action</th></tr></thead><tbody id="tutorCommissionTbody"></tbody></table></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div id="tab-settings" class="tab-content">
       <div class="page-header"><h1>Admin Settings</h1></div>
@@ -177,6 +200,26 @@ $stats = [
   <div class="modal">
     <div class="modal-header"><span class="modal-title">Payment Details</span><span class="modal-close" onclick="closeModal('adminPaymentModal')">×</span></div>
     <div class="modal-body" id="adminPaymentBody"></div>
+  </div>
+</div>
+
+<!-- EDIT COMMISSION MODAL -->
+<div class="modal-overlay" id="editCommissionModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><span class="modal-title">Edit Commission</span><span class="modal-close" onclick="closeModal('editCommissionModal')">×</span></div>
+    <div class="modal-body">
+      <input type="hidden" id="commissionTutorId">
+      <div class="form-group">
+        <label class="form-label">Tutor Name</label>
+        <input type="text" id="commissionTutorName" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tutor Commission % (0-100)</label>
+        <input type="number" id="commissionPercentage" class="form-control" min="0" max="100" value="70">
+        <p class="fs-xs text-muted mt-8">Admin gets: <span id="adminPercentagePreview">30</span>%</p>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveCommission()">Save Commission</button>
+    </div>
   </div>
 </div>
 

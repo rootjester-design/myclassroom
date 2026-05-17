@@ -1,4 +1,4 @@
-const tabTitles={overview:'Dashboard Overview',tutors:'Tutor Management',students:'Student Management',courses:'Course Management',payments:'Payment Management',logs:'Activity Logs',settings:'Settings'};
+const tabTitles={overview:'Dashboard Overview',tutors:'Tutor Management',students:'Student Management',courses:'Course Management',payments:'Payment Management',revenue:'Revenue Management',logs:'Activity Logs',settings:'Settings'};
 let allTutors=[],allStudents=[],allPayments=[],currentPayStatus='pending';
 
 // Core API helper — sends proper headers so PHP isAjax() returns true
@@ -33,6 +33,7 @@ function switchTab(name,el){
   if(name==='students')loadStudents();
   if(name==='courses')loadCourses();
   if(name==='payments')loadPayments('pending');
+  if(name==='revenue')loadRevenue();
   if(name==='logs')loadLogs();
 }
 
@@ -156,5 +157,36 @@ document.getElementById('adminSettingsForm').addEventListener('submit',async e=>
   const d=await api('../api/admin/update-password.php',{method:'POST',body:new FormData(e.target)});
   if(d.success){showToast('Password updated!','success');e.target.reset();}else showToast(d.message||'Failed','error');
 });
+
+// Revenue Management
+async function loadRevenue(){
+  const d=await api('../api/admin/revenue-stats.php');
+  if(!d.success){showToast('Failed to load revenue','error');return;}
+  document.getElementById('adminIncomeValue').textContent='Rs. '+parseFloat(d.admin_income||0).toLocaleString('en-US',{maximumFractionDigits:0});
+  document.getElementById('totalRevenueValue').textContent='Rs. '+parseFloat(d.total_revenue||0).toLocaleString('en-US',{maximumFractionDigits:0});
+  const tb=document.getElementById('tutorCommissionTbody');
+  tb.innerHTML=(d.tutor_breakdown||[]).map(t=>{const tutorName=t.first_name+' '+(t.last_name||'');return `<tr><td class="fw-600 fs-sm">${tutorName}</td><td>Rs. ${parseFloat(t.total_earned||0).toLocaleString('en-US',{maximumFractionDigits:0})}</td><td><strong>${parseFloat(t.commission_percentage||0).toFixed(1)}%</strong></td><td style="color:#4caf50;font-weight:600">Rs. ${parseFloat(t.tutor_income||0).toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#ff9800;font-weight:600">Rs. ${parseFloat(t.admin_income_from_tutor||0).toLocaleString('en-US',{maximumFractionDigits:0})}</td><td><button class="btn btn-primary btn-sm" onclick="editCommission(${t.id},'${tutorName}',${t.commission_percentage})">Edit</button></td></tr>`}).join('')||'<tr><td colspan="6" class="text-center text-muted" style="padding:40px">No tutors yet</td></tr>';
+}
+
+function editCommission(tutorId,tutorName,percentage){
+  document.getElementById('commissionTutorId').value=tutorId;
+  document.getElementById('commissionTutorName').value=tutorName;
+  document.getElementById('commissionPercentage').value=percentage;
+  document.getElementById('adminPercentagePreview').textContent=(100-percentage).toFixed(1);
+  document.getElementById('commissionPercentage').addEventListener('input',e=>{
+    document.getElementById('adminPercentagePreview').textContent=(100-parseFloat(e.target.value||0)).toFixed(1);
+  },{once:false});
+  openModal('editCommissionModal');
+}
+
+async function saveCommission(){
+  const tutorId=parseInt(document.getElementById('commissionTutorId').value,10);
+  const percentage=parseFloat(document.getElementById('commissionPercentage').value||70);
+  if(!tutorId||percentage<0||percentage>100){showToast('Invalid commission percentage','warning');return;}
+  const fd=new FormData();fd.append('tutor_id',tutorId);fd.append('commission_percentage',percentage);
+  const d=await api('../api/admin/tutor-commissions.php',{method:'POST',body:fd});
+  if(d.success){showToast('Commission updated!','success');closeModal('editCommissionModal');loadRevenue();}
+  else showToast(d.message||'Failed','error');
+}
 
 loadOverview();

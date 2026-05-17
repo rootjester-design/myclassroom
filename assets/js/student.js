@@ -160,7 +160,7 @@ async function loadCoursePage() {
 document.addEventListener('DOMContentLoaded', loadCoursePage);
 
 function cdTab(name, el) {
-  document.querySelectorAll('#courseModalBody [id^="cd-"]').forEach(t=>t.classList.add('hidden'));
+  document.querySelectorAll('[id^="cd-"]').forEach(t=>t.classList.add('hidden'));
   document.querySelectorAll('.course-tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('cd-'+name).classList.remove('hidden');
   if(el) el.classList.add('active');
@@ -243,15 +243,11 @@ function renderStoreTutors(list) {
   const el = document.getElementById('store-tutors');
   if(!list.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">👨‍🏫</div><p>No tutors found</p></div>';return;}
   el.innerHTML = list.map(t=>`
-    <div class="tutor-card" onclick="openTutorProfile(${t.id})" style="cursor:pointer">
-      <div class="tutor-card-banner" style="${t.banner_image?`background-image:url(${t.banner_image});background-size:cover`:''};position:relative">
-        <div class="tutor-card-avatar">${t.profile_image?`<img src="${t.profile_image}" class="avatar avatar-lg" style="border:3px solid #fff;border-radius:50%;object-fit:cover">`:`<div class="avatar avatar-lg" style="border:3px solid #fff;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--primary)">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}</div>
-      </div>
-      <div class="tutor-card-body">
-        <div class="tutor-card-name">${t.display_name||t.first_name+' '+t.last_name}</div>
-        <div class="tutor-card-subject">${t.subjects||'General'}</div>
-        <div class="stars mt-8">${stars(t.rating||0)} <span class="fs-xs text-muted">(${t.total_students||0} students)</span></div>
-      </div>
+    <div class="card p-20" onclick="window.location.href='../student/tutor-profile.php?id=${t.id}'" style="cursor:pointer;text-align:center">
+      <div style="margin-bottom:12px">${t.profile_image?`<img src="${t.profile_image}" class="avatar avatar-xl" style="border:3px solid var(--primary);border-radius:50%;object-fit:cover">`:`<div class="avatar avatar-xl" style="border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;background:var(--primary-bg);color:var(--primary);margin:0 auto">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}</div>
+      <div class="fw-700">${t.display_name||t.first_name+' '+t.last_name}</div>
+      <div class="fs-sm text-muted">${t.subjects||'General'}</div>
+      <div class="stars mt-8 flex-center justify-content-center">${stars(t.rating||0)} <span class="fs-xs text-muted ml-4">(${t.total_students||0})</span></div>
     </div>`).join('');
 }
 
@@ -276,36 +272,7 @@ function renderStoreCourses(list) {
 }
 
 async function openTutorProfile(tutorId) {
-  openModal('tutorModal');
-  document.getElementById('tutorModalBody').innerHTML='<div class="flex-center" style="padding:40px"><div class="spinner"></div></div>';
-  try {
-    const res = await fetch(`../api/student/tutor-profile.php?id=${tutorId}`);
-    const d = await res.json();
-    if(!d.success){document.getElementById('tutorModalBody').innerHTML='<div class="alert alert-error">Failed to load profile</div>';return;}
-    const t = d.tutor;
-    const name = t.display_name||t.first_name+' '+t.last_name;
-    document.getElementById('tutorModalTitle').textContent = name;
-    document.getElementById('tutorModalBody').innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;height:120px;margin-bottom:60px;position:relative;${t.banner_image?`background-image:url(${t.banner_image});background-size:cover`:''};overflow:visible">
-        <div style="position:absolute;bottom:-44px;left:24px">${t.profile_image?`<img src="${t.profile_image}" style="width:88px;height:88px;border-radius:50%;border:4px solid #fff;object-fit:cover">`:`<div style="width:88px;height:88px;border-radius:50%;border:4px solid #fff;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--primary);font-weight:800">${name.substring(0,2).toUpperCase()}</div>`}</div>
-      </div>
-      <div class="mb-16"><h3 style="font-size:1.3rem;font-weight:800">${name}</h3>
-      <div class="stars">${stars(t.rating||0)} <span class="fs-sm text-muted">${t.total_students||0} students</span></div>
-      ${t.subjects?`<div class="chip mt-8" style="cursor:default">${t.subjects}</div>`:''}
-      </div>
-      ${t.description?`<div class="card p-16 mb-16"><h4 class="fw-700 mb-8">About</h4><p class="fs-sm">${t.description}</p></div>`:''}
-      ${t.experience?`<div class="card p-16 mb-16"><h4 class="fw-700 mb-8">Experience</h4><p class="fs-sm">${t.experience}</p></div>`:''}
-      ${t.qualifications?`<div class="card p-16 mb-16"><h4 class="fw-700 mb-8">Qualifications</h4><p class="fs-sm">${t.qualifications}</p></div>`:''}
-      <div class="card p-16 mb-16">
-        <h4 class="fw-700 mb-8">Leave a Review</h4>
-        ${d.user_rating?`<div class="fs-sm text-muted mb-12">Your last rating: ${stars(d.user_rating.rating)}${d.user_rating.review?` — ${d.user_rating.review}`:''}</div>`:''}
-        <div class="form-group"><label class="form-label">Rating</label><select id="tutorRatingSelect" class="form-control"><option value="">Select rating</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
-        <div class="form-group"><label class="form-label">Review</label><textarea id="tutorReviewText" class="form-control" rows="3" placeholder="Share your feedback..."></textarea></div>
-        <button class="btn btn-primary btn-full" onclick="submitTutorRating(${t.id})">Submit Review</button>
-      </div>
-      <h4 class="fw-700 mb-12">Courses by ${name}</h4>
-      <div class="grid-2">${(d.courses||[]).map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`:'📚'}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div></div><div class="course-card-footer">${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="closeModal('tutorModal');openPayment(${c.id},'${c.title}',${c.price})">Enroll</button>`}</div></div>`).join('')||'<p class="text-muted">No courses yet</p>'}</div>`;
-  } catch(e) { document.getElementById('tutorModalBody').innerHTML='<div class="alert alert-error">Network error</div>'; }
+  window.location.href = `../student/tutor-profile.php?id=${tutorId}`;
 }
 
 async function submitTutorRating(tutorId) {
@@ -320,7 +287,7 @@ async function submitTutorRating(tutorId) {
     fd.append('review', review);
     const res = await fetch('../api/student/rate-tutor.php',{method:'POST',body:fd});
     const d = await res.json();
-    if (d.success) { showToast(d.message || 'Review submitted','success'); closeModal('tutorModal'); openTutorProfile(tutorId); }
+    if (d.success) { showToast(d.message || 'Review submitted','success'); location.reload(); }
     else showToast(d.message || 'Failed to submit review','error');
   } catch(err) { showToast('Network error','error'); }
 }

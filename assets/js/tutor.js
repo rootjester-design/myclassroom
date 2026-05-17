@@ -37,11 +37,12 @@ async function api(url, opts={}) {
 }
 
 async function loadOverview(){
-  const [p,s]=await Promise.all([api('../api/tutor/payments.php?status=pending'),api('../api/tutor/students.php?limit=5')]);
+  const [p,s,r]=await Promise.all([api('../api/tutor/payments.php?status=pending'),api('../api/tutor/students.php?limit=5'),api('../api/tutor/revenue-stats.php')]);
   const pp=document.getElementById('pending-payments-list');
   pp.innerHTML=(p.data||[]).slice(0,5).map(x=>`<div style="padding:10px;border-radius:8px;background:var(--gray-100);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><div><div class="fw-600 fs-sm">${x.student_name}</div><div class="fs-xs text-muted">${x.course_title} — Rs.${parseFloat(x.amount).toLocaleString()}</div></div><button class="btn btn-primary btn-sm" onclick="reviewPayment(${x.id})">Review</button></div>`).join('')||'<div class="empty-state" style="padding:20px"><p>No pending payments</p></div>';
   const ss=document.getElementById('recent-students-list');
   ss.innerHTML=(s.data||[]).map(x=>`<div style="padding:10px;border-radius:8px;background:var(--gray-100);margin-bottom:8px;display:flex;align-items:center;gap:10px"><div class="avatar avatar-sm" style="background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">${(x.first_name||'?')[0]}${(x.last_name||'')[0]}</div><div><div class="fw-600 fs-sm">${x.first_name} ${x.last_name}</div><div class="fs-xs text-muted">${x.course_title}</div></div></div>`).join('')||'<div class="empty-state" style="padding:20px"><p>No students yet</p></div>';
+  if(r.success){document.getElementById('tutorProfitStat').textContent='Rs. '+parseFloat(r.tutor_profit||0).toLocaleString('en-US',{maximumFractionDigits:0});}
 }
 
 async function loadCourses(){

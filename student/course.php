@@ -39,6 +39,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
 <div class="main-content">
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
+      <button class="icon-btn" onclick="window.history.back()" title="Go back"><i class="fa fa-arrow-left"></i></button>
       <button class="icon-btn" onclick="toggleSidebar()" id="menuBtn"><i class="fa fa-bars"></i></button>
       <span class="topbar-title" id="topbarTitle">Course</span>
     </div>
