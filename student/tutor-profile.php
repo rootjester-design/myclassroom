@@ -123,7 +123,7 @@ async function loadTutorProfilePage() {
     const name = t.display_name||t.first_name+' '+t.last_name;
     document.getElementById('topbarTitle').textContent = name;
     container.innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;height:140px;margin-bottom:60px;position:relative;${t.banner_image?`background-image:url(${t.banner_image});background-size:cover`:''};overflow:visible">
+      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;width:100%;aspect-ratio:5/1;margin-bottom:60px;position:relative;${t.banner_image?`background-image:url(${t.banner_image});background-size:cover`:''};overflow:visible">
         <div style="position:absolute;bottom:-50px;left:24px">${t.profile_image?`<img src="${t.profile_image}" style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;object-fit:cover">`:`<div style="width:100px;height:100px;border-radius:50%;border:4px solid #fff;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--primary);font-weight:800">${name.substring(0,2).toUpperCase()}</div>`}</div>
       </div>
       <div class="mb-24"><h1 style="font-size:1.8rem;font-weight:800;margin-top:20px">${name}</h1>
