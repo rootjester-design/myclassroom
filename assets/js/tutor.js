@@ -178,6 +178,9 @@ document.getElementById('courseForm').addEventListener('submit',async e=>{
   });
 });
 
+let pendingCourseThumbnail = null;
+let pendingCourseThumbnailName = 'thumbnail.jpg';
+
 document.getElementById('profileForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const d=await api('../api/tutor/update-profile.php',{method:'POST',body:new FormData(e.target)});
@@ -191,14 +194,73 @@ document.getElementById('settingsForm').addEventListener('submit',async e=>{
 });
 
 async function uploadTutorAvatar(input){
-  const fd=new FormData();fd.append('profile_image',input.files[0]);
-  const d=await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
-  if(d.success){showToast('Photo updated','success');location.reload();}else showToast(d.message||'Failed','error');
+  const file = input.files[0];
+  if (!file) return;
+  window.onImageCropped = async (blob) => {
+    const fd = new FormData();
+    fd.append('profile_image', blob, file.name);
+    const d = await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
+    if(d.success){showToast('Photo updated','success');location.reload();}else showToast(d.message||'Failed','error');
+    window.onImageCropped = null;
+  };
+  openImageCropper(file, { aspectRatio: 1 });
 }
+
 async function uploadBanner(input){
-  const fd=new FormData();fd.append('banner_image',input.files[0]);
-  const d=await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
-  if(d.success){showToast('Banner updated','success');location.reload();}else showToast(d.message||'Failed','error');
+  const file = input.files[0];
+  if (!file) return;
+  window.onImageCropped = async (blob) => {
+    const fd = new FormData();
+    fd.append('banner_image', blob, file.name);
+    const d = await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
+    if(d.success){showToast('Banner updated','success');location.reload();}else showToast(d.message||'Failed','error');
+    window.onImageCropped = null;
+  };
+  openImageCropper(file, { aspectRatio: 3 });
+}
+
+function prepareCourseThumbnail(input) {
+  const file = input.files[0];
+  if (!file) return;
+  window.onImageCropped = async (blob) => {
+    pendingCourseThumbnail = blob;
+    pendingCourseThumbnailName = file.name || 'thumbnail.jpg';
+    showToast('Thumbnail ready to upload', 'success');
+    input.value = '';
+    window.onImageCropped = null;
+  };
+  openImageCropper(file, { aspectRatio: 16/9 });
+}
+
+function clearPendingCourseThumbnail() {
+  pendingCourseThumbnail = null;
+  pendingCourseThumbnailName = 'thumbnail.jpg';
+}
+
+// Override course save to use cropped thumbnail if available
+const courseForm = document.getElementById('courseForm');
+if (courseForm) {
+  courseForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    const fd = new FormData(e.target);
+    if (pendingCourseThumbnail) {
+      fd.set('thumbnail', pendingCourseThumbnail, pendingCourseThumbnailName);
+    }
+    const d = await api('../api/tutor/save-course.php',{method:'POST',body:fd});
+    if (d.success) {
+      showToast('Course saved!','success');
+      closeModal('addCourseModal');
+      e.target.reset();
+      document.getElementById('editCourseId').value='';
+      clearPendingCourseThumbnail();
+      loadCourses();
+    } else {
+      showToast(d.message||'Failed','error');
+    }
+    btn.disabled=false;
+  });
 }
 
 loadOverview();loadCourses();

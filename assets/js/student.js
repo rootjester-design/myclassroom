@@ -336,12 +336,20 @@ document.getElementById('settingsForm').addEventListener('submit', async e => {
 });
 
 async function uploadProfilePic(input) {
-  const file = input.files[0]; if(!file) return;
-  const fd = new FormData(); fd.append('profile_image', file);
-  const res = await fetch('../api/student/upload-avatar.php',{method:'POST',body:fd});
-  const d = await res.json();
-  if(d.success){showToast('Photo updated!','success');location.reload();}
-  else showToast(d.message||'Failed','error');
+  const file = input.files[0];
+  if (!file) return;
+
+  window.onImageCropped = async (blob) => {
+    const fd = new FormData();
+    fd.append('profile_image', blob, file.name);
+    const res = await fetch('../api/student/upload-avatar.php', { method: 'POST', body: fd });
+    const d = await res.json();
+    if (d.success) { showToast('Photo updated!','success'); location.reload(); }
+    else showToast(d.message || 'Failed','error');
+    window.onImageCropped = null;
+  };
+
+  openImageCropper(file, { aspectRatio: 1 });
 }
 
 // ── Notifications ──────────────────────────────────────

@@ -11,6 +11,12 @@ function showToast(msg, type='info') {
 function closeModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove('active');
+  if (typeof window.onImageCropped !== 'undefined') {
+    window.onImageCropped = null;
+  }
+  if (typeof currentCropper !== 'undefined') {
+    currentCropper = null;
+  }
 }
 function openModal(id) {
   const el = document.getElementById(id);

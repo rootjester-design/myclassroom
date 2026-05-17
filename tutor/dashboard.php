@@ -211,7 +211,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
           <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 3 months"></div>
           <div class="form-group"><label class="form-label">Level</label><select name="level" class="form-control"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
         </div>
-        <div class="form-group"><label class="form-label">Thumbnail</label><input type="file" name="thumbnail" class="form-control" accept="image/*"></div>
+        <div class="form-group"><label class="form-label">Thumbnail</label><input type="file" name="thumbnail" class="form-control" accept="image/*" onchange="prepareCourseThumbnail(this)"></div>
         <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-save"></i> Save Course</button>
       </form>
     </div>
@@ -307,6 +307,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
 </nav>
 
 <script src="../assets/js/main.js"></script>
+<script src="../assets/js/cropper.js"></script>
 <script src="../assets/js/tutor.js"></script>
 </body>
 </html>
