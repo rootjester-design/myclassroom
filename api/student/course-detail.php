@@ -12,6 +12,10 @@ if (!$enroll) jsonResponse(['success'=>false,'message'=>'Not enrolled in this co
 $course = $db->fetch("SELECT c.*, t.first_name||' '||t.last_name AS tutor_name FROM courses c JOIN tutors t ON t.id=c.tutor_id WHERE c.id=?",[$cid]);
 
 $recordings   = $db->fetchAll("SELECT * FROM recordings WHERE course_id=? AND is_active=1 ORDER BY created_at DESC",[$cid]);
+foreach ($recordings as &$rec) {
+    if (!empty($rec['thumbnail'])) $rec['thumbnail'] = assetPath($rec['thumbnail']);
+}
+unset($rec);
 $zoom         = $db->fetchAll("SELECT * FROM zoom_links WHERE course_id=? AND is_active=1 ORDER BY scheduled_at DESC",[$cid]);
 $materials    = $db->fetchAll("SELECT * FROM course_materials WHERE course_id=? AND is_active=1 ORDER BY created_at DESC",[$cid]);
 foreach ($materials as &$material) {

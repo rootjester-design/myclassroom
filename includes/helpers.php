@@ -9,11 +9,11 @@ function startSession(): void {
     if (session_status() === PHP_SESSION_NONE) {
         session_name(SESSION_NAME);
         session_set_cookie_params([
-            'lifetime' => SESSION_LIFETIME,
-            'path'     => '/',
-            'secure'   => false, // set true on HTTPS
-            'httponly' => true,
-            'samesite' => 'Strict'
+                'lifetime' => SESSION_LIFETIME,
+                'path'     => '/',
+                'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+                'httponly' => true,
+                'samesite' => 'Strict'
         ]);
         session_start();
     }
@@ -304,16 +304,24 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
     }
 
     $publicPath = '/assets/uploads/' . $subDir . '/' . $filename;
-    return ['success' => true, 'path' => APP_URL . $publicPath, 'filename' => $filename];
+    return ['success' => true, 'path' => $publicPath, 'filename' => $filename];
 }
 
-function assetPath(string $path): string {
+function assetUrl(string $path): string {
     if (!$path) return '';
-    if (strpos($path, '/assets/') === 0) {
-        return APP_URL . $path;
+    // If it's already an absolute URL, return as-is
+    if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) return $path;
+    // If it's a site-root relative path, build absolute URL using current scheme and host
+    if (strpos($path, '/') === 0) {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? parse_url(APP_URL, PHP_URL_HOST);
+        return $scheme . '://' . $host . $path;
     }
     return $path;
 }
+
+// Backwards-compatible alias
+function assetPath(string $path): string { return assetUrl($path); }
 
 // ============================================================
 // Student ID Generator
