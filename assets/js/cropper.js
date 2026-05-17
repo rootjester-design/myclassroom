@@ -26,8 +26,15 @@ class ImageCropper {
       reader.onload = (e) => {
         this.image = new Image();
         this.image.onload = () => {
+          this._imageBroken = false;
           this.setupCanvas();
           this.draw();
+          resolve();
+        };
+        this.image.onerror = (err) => {
+          console.error('ImageCropper: failed to load image', err);
+          this._imageBroken = true;
+          // Resolve so UI doesn't hang; draw() will no-op on broken image
           resolve();
         };
         this.image.src = e.target.result;
@@ -108,6 +115,20 @@ class ImageCropper {
   }
 
   draw() {
+    // If image failed to load or not ready, don't attempt to draw it
+    if (!this.image || !this.image.complete || this._imageBroken || this.image.naturalWidth === 0) {
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = '#ccc';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = '#666';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.font = '14px sans-serif';
+      this.ctx.fillText('Image failed to load', this.canvas.width/2, this.canvas.height/2);
+      return;
+    }
+
     this.ctx.fillStyle = '#ffffff';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -181,7 +202,12 @@ class ImageCropper {
   }
 
   reset() {
-    this.zoom = Math.min(this.canvas.width / this.image.width, this.canvas.height / this.image.height);
+    // Only reset to image-based zoom when image is available
+    if (this.image && this.image.complete && !this._imageBroken && this.image.naturalWidth > 0) {
+      this.zoom = Math.min(this.canvas.width / this.image.width, this.canvas.height / this.image.height);
+    } else {
+      this.zoom = 1;
+    }
     this.offsetX = 0;
     this.offsetY = 0;
     const slider = this.canvas.parentElement ? this.canvas.parentElement.querySelector('#cropperZoom') : null;
@@ -191,7 +217,14 @@ class ImageCropper {
 
   getBlob() {
     return new Promise((resolve) => {
-      this.canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
+      // if image is broken or canvas not ready, resolve null
+      if (!this.canvas || !this.ctx || this._imageBroken) return resolve(null);
+      try {
+        this.canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
+      } catch (e) {
+        console.error('ImageCropper: toBlob failed', e);
+        resolve(null);
+      }
     });
   }
 }
@@ -216,6 +249,10 @@ function openImageCropper(file, options = {}) {
 async function saveImage() {
   if (!currentCropper) return;
   const blob = await currentCropper.getBlob();
+  if (!blob) {
+    alert('Failed to generate image. The uploaded file may be corrupted.');
+    return;
+  }
   if (window.onImageCropped) {
     window.onImageCropped(blob);
   }
