@@ -162,6 +162,17 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
       <div id="paymentCourseInfo" class="alert alert-info mb-16"></div>
       <form id="paymentForm">
         <input type="hidden" name="course_id" id="pay-course-id">
+        <div><b>Option 1</b><br>බැංකු ශාඛාවක් හෝ යන්ත්‍රයක් මගින් සිදුකරන තැම්පතුවක් වේ නම් එම Payment එක සනාථ කිරීමට අදාල Recipt පතෙහි තමන්ගේ Student ID එක පෑනක් භාවිතයෙන් ලියා එම ස්ලිප් පත Payment Slip ලෙස සදහන් කොටස හරහා upload කරන්න.
+<br>
+<b>Option 2</b><br>
+Online Transfer එකක් ලෙස කරන ඕනෑම තැම්පතුවක් සදහා තැන්පතුව සිදු කරනා විට Discription, Remarks ලෙස සදහන් ස්ථානයට ඔබගේ Student ID එක ඇතුලත් කර එම මුදල් තැම්පතුව සාර්ථකව සිදු කල බවට ලැබෙන <b>Screenshot</b> එක Payment Slip ලෙස සදහන් කොටස හරහා upload කරන්න.
+<br>
+<b>Next Step</b><br>
+ඉහත සදහන් කරන දෙයාකාරයෙන්ම මුදල් තැම්පත් කරන ස්ලිප් පත් සඳහා, ස්ලිප් පතෙහි මෙලෙස සදහන් ඕනෑම ආකාරයක අංකයක් මුද්‍රිතව සඳහන් වී ඇත.<br>
+Trace ID, Txn Number, Transaction ID, Reference Number, Seq Number<br>
+ස්ලිප් පත upload කිරීමේදී <b>Payment Reference</b> ලෙස සදහන් කොටසට එලෙස සදහන් එකී ඕනෑම අංකයක් ඇතුලත් කර ඔබගේ ස්ලිප් පත Submit කරන්න.
+
+පැය කීපයක් ඇතුලත ඔබගේ පන්තිය වනු ඇත.</div>
         <div class="form-group"><label class="form-label">Payment Reference *</label><input type="text" name="payment_reference" class="form-control" placeholder="e.g. TXN123456" required></div>
         <div class="form-group"><label class="form-label">Payment Slip *</label>
           <div class="file-upload-area" onclick="document.getElementById('slipFile').click()">
