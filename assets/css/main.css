@@ -215,6 +215,9 @@ ul,ol { list-style:none; }
 }
 @keyframes shimmer { to{ background-position:-200% 0; } }
 
+/* ── Form Row ── */
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
 /* ── Stats Card ── */
 .stat-card {
   background: var(--white);
