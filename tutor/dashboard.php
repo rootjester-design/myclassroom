@@ -165,7 +165,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
           </div>
           <div class="form-group"><label class="form-label">Qualifications</label><textarea name="qualifications" class="form-control" rows="2" placeholder="BSc, MSc, etc."><?=htmlspecialchars($user['qualifications']??'')?></textarea></div>
           <div class="form-group"><label class="form-label">Contact Info</label><input type="text" name="contact_info" class="form-control" value="<?=htmlspecialchars($user['contact_info']??'')?>" placeholder="Email or phone"></div>
-          <div class="form-group"><label class="form-label">Social Links (JSON)</label><input type="text" name="social_links" class="form-control" value="<?=htmlspecialchars($user['social_links']??'')?>" placeholder='{"facebook":"url","youtube":"url"}'></div>
+          <div class="form-group"><label class="form-label">Social Links (JSON)</label><input type="text" name="social_links" class="form-control" value="<?=htmlspecialchars(htmlspecialchars_decode($user['social_links']??''))?>" placeholder='{"facebook":"url","youtube":"url"}'></div>
           <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Profile</button>
         </form>
       </div>

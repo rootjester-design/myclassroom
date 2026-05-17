@@ -9,7 +9,8 @@ $exp     = sanitize($_POST['experience']??'');
 $qual    = sanitize($_POST['qualifications']??'');
 $subj    = sanitize($_POST['subjects']??'');
 $contact = sanitize($_POST['contact_info']??'');
-$social  = sanitize($_POST['social_links']??'');
+$socialRaw = trim($_POST['social_links']??'');
+$social  = $socialRaw ? (json_decode($socialRaw) ? json_encode(json_decode($socialRaw)) : '') : '';
 $db->execute("UPDATE tutors SET display_name=?,description=?,experience=?,qualifications=?,subjects=?,contact_info=?,social_links=?,updated_at=datetime('now') WHERE id=?",
     [$display,$desc,$exp,$qual,$subj,$contact,$social,$tid]);
 $_SESSION['user'] = array_merge($_SESSION['user'],['display_name'=>$display,'description'=>$desc,'subjects'=>$subj]);
