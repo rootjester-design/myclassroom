@@ -21,15 +21,13 @@
   will-change: transform;
 }
 .sidebar-logo {
-  padding: 22px 20px 18px;
+  padding: 24px 20px;
   border-bottom: 1px solid var(--gray-100);
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--primary);
-  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-.sidebar-logo span { color: var(--black); }
 .sidebar-nav {
   flex: 1;
   padding: 12px 10px;

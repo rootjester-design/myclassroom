@@ -21,7 +21,7 @@ if (isLoggedIn() && getAuthUser()['role']==='tutor') redirect('/tutor/dashboard.
 <div class="auth-page">
   <div class="auth-left">
     <div class="auth-left-content">
-      <div class="auth-logo" style="color:#e53935">My<span style="color:#fff">Classroom</span></div>
+      <img src="../assets/img/logo-1.png" alt="MyClassroom" style="height:140px;margin-bottom:12px;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.2))">
       <p class="auth-tagline">Administrator & Tutor Portal</p>
       <div class="auth-feature-list">
         <div class="auth-feature"><div class="auth-feature-icon" style="background:rgba(229,57,53,0.2)">👑</div><div><div class="auth-feature-title">Super Admin</div><div class="auth-feature-text">Full platform control</div></div></div>

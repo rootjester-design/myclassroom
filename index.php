@@ -68,7 +68,7 @@ footer a{color:rgba(255,255,255,0.4);margin:0 12px;}
 <body>
 <div class="hero">
   <nav>
-    <div class="nav-logo">My<span>Classroom</span></div>
+    <a href="index.php"><img src="assets/img/logo-3.png" alt="MyClassroom" style="height:32px;display:block"></a>
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="auth/login.php" class="btn btn-outline btn-sm">Login</a>

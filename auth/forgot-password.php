@@ -18,7 +18,7 @@ if (isLoggedIn()) redirect('/student/dashboard.php');
 <div class="auth-page">
   <div class="auth-left">
     <div class="auth-left-content">
-      <div class="auth-logo">My<span>Classroom</span></div>
+      <img src="../assets/img/logo-1.png" alt="MyClassroom" style="height:140px;margin-bottom:12px;display:block">
       <p class="auth-tagline">Reset your password securely</p>
       <div class="auth-feature-list">
         <div class="auth-feature"><div class="auth-feature-icon">📱</div><div><div class="auth-feature-title">OTP Verification</div><div class="auth-feature-text">Verify your phone number</div></div></div>
