@@ -22,7 +22,7 @@ if ((float)$course['price'] > 0) {
 }
 
 // Direct enroll
-$db->insert("INSERT INTO enrollments (student_id,course_id,status) VALUES (?,?,'active')", [$sid,$courseId]);
+$db->insert("INSERT INTO enrollments (student_id,course_id,tutor_id,status) VALUES (?,?,?,'active')", [$sid,$courseId,$course['tutor_id']]);
 
 createNotification($sid,'student','Course Enrolled','You successfully enrolled in "'.$course['title'].'".','success',$courseId,'course');
 createNotification((int)$course['tutor_id'],'tutor','New Enrollment','A student enrolled in your free course "'.$course['title'].'".','info',$courseId,'course');
