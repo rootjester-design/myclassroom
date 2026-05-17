@@ -129,19 +129,23 @@ async function loadTutorProfilePage() {
       <div class="mb-24"><h1 style="font-size:1.8rem;font-weight:800;margin-top:20px">${name}</h1>
       ${t.subjects?`<div class="chip mt-12" style="cursor:default">${t.subjects}</div>`:''}
       </div>
-      ${t.social_links?(() => {
-        try {
-          const links = JSON.parse(t.social_links);
-          if (Object.keys(links).length === 0) return '';
-          return '<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Social Links</h3><div style="display:flex;gap:12px">' + 
-            Object.entries(links).map(([platform, url]) => `<a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="text-transform:capitalize"><i class="fab fa-${platform.toLowerCase()}"></i> ${platform}</a>`).join('') + 
-            '</div></div>';
-        } catch(e) { return ''; }
-      })():''}
-      ${t.description?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">About</h3><p>${t.description}</p></div>`:''}
-      ${t.experience?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Experience</h3><p>${t.experience}</p></div>`:''}
-      ${t.qualifications?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Qualifications</h3><p>${t.qualifications}</p></div>`:''}
-      ${t.contact_info?`<div class="card p-20 mb-20"><h3 class="fw-700 mb-12">Contact</h3><p>${t.contact_info}</p></div>`:''}
+      ${(t.social_links && t.social_links!=='{}' || t.description || t.experience || t.qualifications || t.contact_info) ? `
+      <div class="card p-24 mb-32">
+        ${t.social_links?(() => {
+          try {
+            const links = JSON.parse(t.social_links);
+            if (Object.keys(links).length === 0) return '';
+            return '<div class="mb-24"><h3 class="fw-700 mb-12" style="font-size:1.05rem;color:var(--black)">Social Links</h3><div style="display:flex;gap:12px;flex-wrap:wrap">' + 
+              Object.entries(links).map(([platform, url]) => `<a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="text-transform:capitalize;box-shadow:var(--shadow-sm)"><i class="fab fa-${platform.toLowerCase()}"></i> ${platform}</a>`).join('') + 
+              '</div></div>';
+          } catch(e) { return ''; }
+        })():''}
+        ${t.description?`<div class="mb-24"><h3 class="fw-700 mb-8" style="font-size:1.05rem;color:var(--black)">About</h3><p style="color:var(--gray-700);line-height:1.6">${t.description}</p></div>`:''}
+        ${t.experience?`<div class="mb-24"><h3 class="fw-700 mb-8" style="font-size:1.05rem;color:var(--black)">Experience</h3><p style="color:var(--gray-700);line-height:1.6">${t.experience}</p></div>`:''}
+        ${t.qualifications?`<div class="mb-24"><h3 class="fw-700 mb-8" style="font-size:1.05rem;color:var(--black)">Qualifications</h3><p style="color:var(--gray-700);line-height:1.6">${t.qualifications}</p></div>`:''}
+        ${t.contact_info?`<div class="mb-8"><h3 class="fw-700 mb-8" style="font-size:1.05rem;color:var(--black)">Contact</h3><p style="color:var(--gray-700);line-height:1.6">${t.contact_info}</p></div>`:''}
+      </div>
+      ` : ''}
       <h2 class="section-title">Courses by ${name}</h2>
       <div class="grid-3">${(d.courses||[]).map(c=>`<div class="course-card"><div class="course-card-thumb">${c.thumbnail?`<img src="${c.thumbnail}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">📚</div>`}</div><div class="course-card-body"><div class="course-card-title">${c.title}</div><div class="course-card-price">Rs. ${parseFloat(c.price||0).toLocaleString()}</div></div><div class="course-card-footer">${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:`<button class="btn btn-primary btn-sm btn-full" onclick="openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll</button>`}</div></div>`).join('')||'<p class="text-muted">No courses yet</p>'}</div>`;
   } catch(e) {
