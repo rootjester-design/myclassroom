@@ -87,6 +87,24 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
       <div id="paymentCourseInfo" class="alert alert-info mb-16"></div>
       <form id="paymentForm">
         <input type="hidden" name="course_id" id="pay-course-id">
+        <div class="p-16 mb-20" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;font-size:0.9rem;line-height:1.6;color:#495057;">
+          <h4 style="font-weight:700;color:var(--primary);margin-bottom:8px">Payment Instructions</h4>
+          <div style="margin-bottom:12px">
+            <strong style="color:#212529">Option 1:</strong><br>
+            බැංකු ශාඛාවක් හෝ යන්ත්‍රයක් මගින් සිදුකරන තැම්පතුවක් වේ නම් එම Payment එක සනාථ කිරීමට අදාල Recipt පතෙහි තමන්ගේ Student ID එක පෑනක් භාවිතයෙන් ලියා එම ස්ලිප් පත Payment Slip ලෙස සදහන් කොටස හරහා upload කරන්න.
+          </div>
+          <div style="margin-bottom:12px">
+            <strong style="color:#212529">Option 2:</strong><br>
+            Online Transfer එකක් ලෙස කරන ඕනෑම තැම්පතුවක් සදහා තැන්පතුව සිදු කරනා විට Discription, Remarks ලෙස සදහන් ස්ථානයට ඔබගේ Student ID එක ඇතුලත් කර එම මුදල් තැම්පතුව සාර්ථකව සිදු කල බවට ලැබෙන <b>Screenshot</b> එක Payment Slip ලෙස සදහන් කොටස හරහා upload කරන්න.
+          </div>
+          <div style="padding-top:12px;border-top:1px solid #dee2e6">
+            <strong style="color:#212529">Next Step:</strong><br>
+            ඉහත සදහන් කරන දෙයාකාරයෙන්ම මුදල් තැම්පත් කරන ස්ලිප් පත් සඳහා, ස්ලිප් පතෙහි මෙලෙස සදහන් ඕනෑම ආකාරයක අංකයක් මුද්‍රිතව සඳහන් වී ඇත.<br>
+            <span style="display:inline-block;background:#e9ecef;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:0.85rem;margin:4px 0">Trace ID, Txn Number, Transaction ID, Reference Number, Seq Number</span><br>
+            ස්ලිප් පත upload කිරීමේදී <b>Payment Reference</b> ලෙස සදහන් කොටසට එලෙස සදහන් එකී ඕනෑම අංකයක් ඇතුලත් කර ඔබගේ ස්ලිප් පත Submit කරන්න.
+          </div>
+          <div class="mt-8" style="font-weight:600;color:var(--success)">✅ පැය කීපයක් ඇතුලත ඔබගේ පන්තිය Active වනු ඇත.</div>
+        </div>
         <div class="form-group"><label class="form-label">Payment Reference *</label><input type="text" name="payment_reference" class="form-control" placeholder="e.g. TXN123456" required></div>
         <div class="form-group"><label class="form-label">Payment Slip *</label>
           <div class="file-upload-area" onclick="document.getElementById('slipFile').click()">
