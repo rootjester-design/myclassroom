@@ -143,7 +143,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
     <div id="tab-profile" class="tab-content">
       <div class="page-header"><h1>My Public Profile</h1><p>This is what students see in the Store</p></div>
       <div class="card p-24" style="max-width:700px">
-        <div style="position:relative;width:100%;aspect-ratio:5/1;background:<?= $user['banner_image'] ? 'url('.htmlspecialchars($user['banner_image']).') center/cover' : 'linear-gradient(135deg,var(--primary),var(--primary-dark))' ?>;border-radius:12px;margin-bottom:60px">
+        <div style="position:relative;width:100%;aspect-ratio:820/312;background:<?= $user['banner_image'] ? 'url('.htmlspecialchars($user['banner_image']).') center/cover' : 'linear-gradient(135deg,var(--primary),var(--primary-dark))' ?>;border-radius:12px;margin-bottom:60px">
           <label style="position:absolute;bottom:12px;right:12px;cursor:pointer;background:var(--white);color:var(--black);box-shadow:var(--shadow);border-radius:20px;padding:6px 14px;font-weight:600;font-size:0.85rem;" class="btn">
             <i class="fa fa-camera" style="margin-right:4px"></i> Banner<input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
           </label>
