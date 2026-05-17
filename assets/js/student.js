@@ -240,13 +240,13 @@ function renderStoreTutors(list) {
   const el = document.getElementById('store-tutors');
   if(!list.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">👨‍🏫</div><p>No tutors found</p></div>';return;}
   el.innerHTML = list.map(t=>`
-    <div class="card" onclick="window.location.href='../student/tutor-profile.php?id=${t.id}'" style="cursor:pointer;overflow:hidden;display:flex;flex-direction:column;height:320px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.06)'">
-      <div style="flex:1;width:100%;background:#f5f5f5">
-        ${t.profile_image?`<img src="${t.profile_image}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--primary-bg);color:var(--primary);font-size:2.5rem;font-weight:800">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}
+    <div class="card" onclick="window.location.href='../student/tutor-profile.php?id=${t.id}'" style="cursor:pointer;overflow:hidden;display:flex;flex-direction:column;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s;height:100%;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.06)'">
+      <div style="width:100%;aspect-ratio:4/5;background:#f5f5f5;position:relative">
+        ${t.profile_image?`<img src="${t.profile_image}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">`:`<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--primary-bg);color:var(--primary);font-size:3rem;font-weight:800">${(t.display_name||t.first_name+' '+t.last_name).substring(0,2).toUpperCase()}</div>`}
       </div>
-      <div style="padding:20px;background:#fff;text-align:center">
-        <div class="fw-700" style="font-size:1.1rem;color:#222;margin-bottom:4px">${t.display_name||t.first_name+' '+t.last_name}</div>
-        <div class="fs-sm text-muted">${t.subjects||'General'}</div>
+      <div style="padding:16px 12px;background:#fff;text-align:center;flex-grow:1;display:flex;flex-direction:column;justify-content:center;">
+        <div class="fw-700" style="font-size:1.1rem;color:#000;margin-bottom:6px">${t.display_name||t.first_name+' '+t.last_name}</div>
+        <div class="fs-sm text-muted" style="color:#666">${t.subjects||'General'}</div>
       </div>
     </div>`).join('');
 }
