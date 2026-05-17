@@ -120,6 +120,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
     const fd = new FormData(e.target);
+    if (phone) {
+        fd.set('phone', '0' + phone.replace(/^0/, ''));
+    }
     const res = await fetch('../api/auth/login.php', { method:'POST', body: fd, credentials: 'same-origin' });
     const text = await res.text();
     let data;
