@@ -119,7 +119,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
     const fd = new FormData(e.target);
-    const res = await fetch('../api/auth/login.php', { method:'POST', body: fd });
+    const res = await fetch('../api/auth/login.php', { method:'POST', body: fd, credentials: 'same-origin' });
     const text = await res.text();
     let data;
     try { data = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }

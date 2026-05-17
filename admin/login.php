@@ -71,7 +71,7 @@ document.getElementById('adminLoginForm').addEventListener('submit',async e=>{
   const btn=document.getElementById('loginBtn');const text=document.getElementById('loginText');const spin=document.getElementById('loginSpinner');
   btn.disabled=true;text.textContent='Signing in...';spin.classList.remove('hidden');
   try{
-    const res=await fetch('../api/auth/login.php',{method:'POST',body:new FormData(e.target)});
+    const res=await fetch('../api/auth/login.php',{method:'POST',body:new FormData(e.target), credentials: 'same-origin'});
     const text=await res.text();
     let d;
     try { d = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
