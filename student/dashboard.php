@@ -26,7 +26,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 <div class="dashboard-layout">
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo"><img src="../assets/img/logo-1.png" alt="MyClassroom" style="height:90px;width:auto"></div>
+  <div class="sidebar-logo"><img src="../assets/img/logo-3.png" alt="MyClassroom" style="height:90px;width:auto"></div>
   <nav class="sidebar-nav">
     <button class="nav-item active" onclick="switchTab('home',this)"><span class="nav-icon"><i class="fa fa-home"></i></span> Home</button>
     <button class="nav-item" onclick="switchTab('courses',this)"><span class="nav-icon"><i class="fa fa-book"></i></span> My Courses</button>

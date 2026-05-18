@@ -25,7 +25,7 @@ if (isLoggedIn()) {
   <!-- Left Brand Panel -->
   <div class="auth-left">
     <div class="auth-left-content">
-      <img src="../assets/img/logo-1.png" alt="MyClassroom" style="height:140px;margin-bottom:12px;display:block">
+      <img src="../assets/img/logo-1.png" alt="MyClassroom" style="height:250px;margin-bottom:12px;display:block">
       <p class="auth-tagline">Your gateway to premium learning</p>
       <div class="auth-feature-list">
         <div class="auth-feature">

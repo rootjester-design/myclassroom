@@ -18,6 +18,7 @@ if (isLoggedIn()) {
 <meta name="description" content="MyClassroom is a premium online learning platform connecting students with expert tutors in Sri Lanka.">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" type="image/png" href="assets/img/logo-2.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;overflow-x:hidden;}
@@ -68,7 +69,7 @@ footer a{color:rgba(255,255,255,0.4);margin:0 12px;}
 <body>
 <div class="hero">
   <nav>
-    <a href="index.php"><img src="assets/img/logo-3.png" alt="MyClassroom" style="height:32px;display:block"></a>
+    <a href="index.php"><img src="assets/img/logo-1.png" alt="MyClassroom" style="height: 64px; display:block"></a>
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="auth/login.php" class="btn btn-outline btn-sm">Login</a>
