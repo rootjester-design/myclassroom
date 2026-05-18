@@ -122,6 +122,7 @@ class Database {
                 banner_image TEXT,
                 social_links TEXT,
                 contact_info TEXT,
+                bank_details TEXT,
                 is_active INTEGER DEFAULT 1,
                 is_approved INTEGER DEFAULT 0,
                 is_suspended INTEGER DEFAULT 0,
@@ -405,6 +406,20 @@ class Database {
         } catch (PDOException $e) {
             // Migration failure should not break the app; log and continue
             error_log('Migration warning: failed to ensure is_free column: '.$e->getMessage());
+        }
+
+        // Run simple migration to add bank_details column if it doesn't exist
+        try {
+            $cols = $this->pdo->query("PRAGMA table_info(tutors)")->fetchAll(PDO::FETCH_ASSOC);
+            $hasBankDetails = false;
+            foreach ($cols as $col) {
+                if (isset($col['name']) && $col['name'] === 'bank_details') { $hasBankDetails = true; break; }
+            }
+            if (!$hasBankDetails) {
+                $this->pdo->exec("ALTER TABLE tutors ADD COLUMN bank_details TEXT NULL");
+            }
+        } catch (PDOException $e) {
+            error_log('Migration warning: failed to ensure bank_details column: '.$e->getMessage());
         }
 
         // Seed default super admin
