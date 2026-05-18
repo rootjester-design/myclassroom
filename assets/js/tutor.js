@@ -119,7 +119,7 @@ async function loadRecordings(){
   el.innerHTML=d.data.map(r=>`<div class="card p-16">
     <div class="flex-between mb-8"><div class="fw-600">${r.title}</div><button class="btn btn-danger btn-sm" onclick="deleteItem('recording',${r.id})"><i class="fa fa-trash"></i></button></div>
     <div class="fs-sm text-muted">${r.course_title}</div>
-    <button class="btn btn-outline btn-sm mt-8" onclick="playRecording(${r.id}, '${r.video_url}')"><i class="fa fa-play"></i> Preview</button>
+    <button class="btn btn-outline btn-sm mt-8" onclick="playRecording(${r.id}, '${(r.video_url||'').replace(/'/g, "\\'")}')"><i class="fa fa-play"></i> Preview</button>
     <div id="rec-vid-${r.id}" style="display:none;position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;margin-top:12px;"></div>
   </div>`).join('');
 }

@@ -168,7 +168,7 @@ function renderRecordings(list) {
   return list.map(r=>`<div class="card p-16 mb-12">
     <div class="flex-between mb-8">
       <div><div class="fw-600">${r.title}</div><div class="fs-xs text-muted mt-4">${r.description||''}</div></div>
-      <button class="btn btn-primary btn-sm" onclick="playRecording(${r.id}, '${r.video_url}')"><i class="fa fa-play"></i> Watch</button>
+      <button class="btn btn-primary btn-sm" onclick="playRecording(${r.id}, '${(r.video_url||'').replace(/'/g, "\\'")}')"><i class="fa fa-play"></i> Watch</button>
     </div>
     <div id="rec-vid-${r.id}" style="display:none;position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;margin-top:12px;"></div>
   </div>`).join('');

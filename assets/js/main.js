@@ -122,13 +122,16 @@ function stars(rating) {
 
 function getEmbedUrl(url) {
   if (!url) return '';
-  let embedUrl = url;
-  if (url.includes('youtube.com/watch?v=')) {
-    embedUrl = url.replace('watch?v=', 'embed/').split('&')[0];
-  } else if (url.includes('youtu.be/')) {
-    embedUrl = url.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
-  } else if (url.includes('drive.google.com/file/d/')) {
-    embedUrl = url.replace('/view', '/preview');
+  let embedUrl = url.trim();
+  if (!/^https?:\/\//i.test(embedUrl)) {
+    embedUrl = 'https://' + embedUrl;
+  }
+  if (embedUrl.includes('youtube.com/watch?v=')) {
+    embedUrl = embedUrl.replace('watch?v=', 'embed/').split('&')[0];
+  } else if (embedUrl.includes('youtu.be/')) {
+    embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
+  } else if (embedUrl.includes('drive.google.com/file/d/')) {
+    embedUrl = embedUrl.replace('/view', '/preview');
   }
   return embedUrl;
 }
@@ -136,7 +139,15 @@ function getEmbedUrl(url) {
 function playRecording(id, url) {
   const container = document.getElementById('rec-vid-' + id);
   if (container) {
-    container.innerHTML = `<iframe src="${getEmbedUrl(url)}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px" allowfullscreen></iframe>`;
+    const embedUrl = getEmbedUrl(url);
+    container.innerHTML = `
+      <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;background:#000;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div style="position:absolute;top:10px;right:10px;z-index:10;">
+        <a href="${url}" target="_blank" class="btn btn-sm" style="background:rgba(0,0,0,0.6);color:#fff;border:none;backdrop-filter:blur(4px);"><i class="fa fa-external-link-alt"></i> Open Externally</a>
+      </div>
+    `;
     container.style.display = 'block';
+    const playBtn = container.parentElement.querySelector('button[onclick^="playRecording"]');
+    if (playBtn) playBtn.style.display = 'none';
   }
 }
