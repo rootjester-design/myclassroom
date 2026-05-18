@@ -142,9 +142,6 @@ function playRecording(id, url) {
     const embedUrl = getEmbedUrl(url);
     container.innerHTML = `
       <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;background:#000;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <div style="position:absolute;top:10px;right:10px;z-index:10;">
-        <a href="${url}" target="_blank" class="btn btn-sm" style="background:rgba(0,0,0,0.6);color:#fff;border:none;backdrop-filter:blur(4px);"><i class="fa fa-external-link-alt"></i> Open Externally</a>
-      </div>
     `;
     container.style.display = 'block';
     const playBtn = container.parentElement.querySelector('button[onclick^="playRecording"]');
