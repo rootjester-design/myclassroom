@@ -32,7 +32,7 @@ $stats = [
 <div class="dashboard-layout">
 
 <aside class="sidebar admin-sidebar" id="sidebar">
-  <div class="sidebar-logo"><img src="../assets/img/logo-3.png" alt="MyClassroom Admin" style="height:90px;width:auto"></div>
+  <div class="sidebar-logo"><img src="../assets/img/logo-3.png" alt="MyClassroom Admin" style="height:140px;width:auto;max-width:100%;object-fit:contain"></div>
   <nav class="sidebar-nav">
     <button class="nav-item active" onclick="switchTab('overview',this)"><span class="nav-icon"><i class="fa fa-tachometer-alt"></i></span> Overview</button>
     <button class="nav-item" onclick="switchTab('tutors',this)"><span class="nav-icon"><i class="fa fa-chalkboard-teacher"></i></span> Tutors</button>
