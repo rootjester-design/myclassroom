@@ -116,7 +116,12 @@ async function loadRecordings(){
   const d=await api('../api/tutor/recordings.php');
   const el=document.getElementById('recordings-list');
   if(!(d.data||[]).length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🎬</div><h3>No recordings yet</h3></div>';return;}
-  el.innerHTML=d.data.map(r=>`<div class="card p-16"><div class="flex-between mb-8"><div class="fw-600">${r.title}</div><button class="btn btn-danger btn-sm" onclick="deleteItem('recording',${r.id})"><i class="fa fa-trash"></i></button></div><div class="fs-sm text-muted">${r.course_title}</div><a href="${r.video_url}" target="_blank" class="btn btn-outline btn-sm mt-8"><i class="fa fa-play"></i> Preview</a></div>`).join('');
+  el.innerHTML=d.data.map(r=>`<div class="card p-16">
+    <div class="flex-between mb-8"><div class="fw-600">${r.title}</div><button class="btn btn-danger btn-sm" onclick="deleteItem('recording',${r.id})"><i class="fa fa-trash"></i></button></div>
+    <div class="fs-sm text-muted">${r.course_title}</div>
+    <button class="btn btn-outline btn-sm mt-8" onclick="playRecording(${r.id}, '${r.video_url}')"><i class="fa fa-play"></i> Preview</button>
+    <div id="rec-vid-${r.id}" style="display:none;position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;margin-top:12px;"></div>
+  </div>`).join('');
 }
 
 async function loadMaterials(){

@@ -165,7 +165,13 @@ function cdTab(name, el) {
 
 function renderRecordings(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">🎬</div><p>No recordings yet</p></div>';
-  return list.map(r=>`<div class="card p-16 mb-12"><div class="flex-between"><div><div class="fw-600">${r.title}</div><div class="fs-xs text-muted mt-4">${r.description||''}</div></div><a href="${r.video_url}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-play"></i> Watch</a></div></div>`).join('');
+  return list.map(r=>`<div class="card p-16 mb-12">
+    <div class="flex-between mb-8">
+      <div><div class="fw-600">${r.title}</div><div class="fs-xs text-muted mt-4">${r.description||''}</div></div>
+      <button class="btn btn-primary btn-sm" onclick="playRecording(${r.id}, '${r.video_url}')"><i class="fa fa-play"></i> Watch</button>
+    </div>
+    <div id="rec-vid-${r.id}" style="display:none;position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;margin-top:12px;"></div>
+  </div>`).join('');
 }
 function renderZoomList(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">📹</div><p>No live classes scheduled</p></div>';

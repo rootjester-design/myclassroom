@@ -119,3 +119,24 @@ function stars(rating) {
   for (let i=1; i<=5; i++) s += `<span style="color:${i<=Math.round(rating)?'#ffc107':'#e0e0e0'}">★</span>`;
   return s;
 }
+
+function getEmbedUrl(url) {
+  if (!url) return '';
+  let embedUrl = url;
+  if (url.includes('youtube.com/watch?v=')) {
+    embedUrl = url.replace('watch?v=', 'embed/').split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    embedUrl = url.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
+  } else if (url.includes('drive.google.com/file/d/')) {
+    embedUrl = url.replace('/view', '/preview');
+  }
+  return embedUrl;
+}
+
+function playRecording(id, url) {
+  const container = document.getElementById('rec-vid-' + id);
+  if (container) {
+    container.innerHTML = `<iframe src="${getEmbedUrl(url)}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px" allowfullscreen></iframe>`;
+    container.style.display = 'block';
+  }
+}
