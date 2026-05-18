@@ -271,7 +271,7 @@ function renderStoreCourses(list) {
         <div class="course-card-price">${parseFloat(c.price||0) > 0 ? 'Rs. ' + parseFloat(c.price).toLocaleString() : '<span class="text-green fw-700">Free</span>'}</div>
       </div>
       <div class="course-card-footer">
-        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:(parseFloat(c.price||0)>0?`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}')">Enroll Now</button>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();enrollFreeCourse(${c.id})">Enroll Now</button>`)}
+        ${c.enrolled?`<span class="badge badge-green btn-full text-center">✅ Enrolled</span>`:(parseFloat(c.price||0)>0?`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openPayment(${c.id},'${c.title.replace(/'/g, "\\'")}',${c.price},'${c.thumbnail||''}','${(c.description||'').replace(/'/g, "\\'")}', '${c.bank_details ? btoa(unescape(encodeURIComponent(c.bank_details))) : ''}')">Enroll Now</button>`:`<button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();enrollFreeCourse(${c.id})">Enroll Now</button>`)}
       </div>
     </div>`).join('');
 }
@@ -298,7 +298,7 @@ async function submitTutorRating(tutorId) {
 }
 
 // ── Payment ────────────────────────────────────────────
-function openPayment(courseId, title, price, thumbnail, description) {
+function openPayment(courseId, title, price, thumbnail, description, bankBase64) {
   document.getElementById('pay-course-id').value = courseId;
   let thumbHtml = thumbnail && thumbnail !== 'null' && thumbnail !== 'undefined' ? `<img src="${thumbnail}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : '';
   let descHtml = description && description !== 'null' && description !== 'undefined' ? `<div class="fs-sm text-muted mt-4" style="line-height:1.4">${description}</div>` : '';
@@ -310,6 +310,20 @@ function openPayment(courseId, title, price, thumbnail, description) {
       <div class="mt-8 fs-md" style="color:var(--gray-700)">Amount: <strong class="text-primary fs-lg">Rs. ${parseFloat(price).toLocaleString()}</strong></div>
     </div>
   `;
+  const bEl = document.getElementById('paymentBankDetails');
+  if (bEl) {
+    if (bankBase64 && bankBase64 !== 'null' && bankBase64 !== 'undefined') {
+      try {
+        let bankText = decodeURIComponent(escape(atob(bankBase64)));
+        if (bankText.trim()) {
+          bEl.innerHTML = '<strong style="color:var(--primary);font-size:1.05rem;"><i class="fa fa-university"></i> Tutor Bank Details:</strong><div class="mt-8" style="background:#fff;padding:12px;border-radius:8px;border:1px solid #dee2e6;font-family:monospace;font-size:0.95rem;">' + bankText.replace(/\n/g, '<br>') + '</div>';
+          bEl.style.display = 'block';
+        } else { bEl.style.display = 'none'; }
+      } catch(e) { bEl.style.display = 'none'; }
+    } else {
+      bEl.style.display = 'none';
+    }
+  }
   document.getElementById('slipPreview').style.display='none';
   document.getElementById('slipFile').value='';
   openModal('paymentModal');

@@ -5,7 +5,7 @@ $db = Database::getInstance();
 $sid = $user['id'];
 
 $courses = $db->fetchAll("
-    SELECT c.*, t.first_name||' '||t.last_name AS tutor_name,
+    SELECT c.*, t.first_name||' '||t.last_name AS tutor_name, t.bank_details AS bank_details,
     (SELECT 1 FROM enrollments WHERE student_id=? AND course_id=c.id AND status='active') AS enrolled
     FROM courses c JOIN tutors t ON t.id=c.tutor_id
     WHERE c.is_active=1 AND t.is_active=1 AND t.is_approved=1

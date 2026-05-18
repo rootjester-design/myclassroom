@@ -161,6 +161,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
     <div class="modal-header"><span class="modal-title">💳 Submit Payment</span><span class="modal-close" onclick="closeModal('paymentModal')">×</span></div>
     <div class="modal-body">
       <div id="paymentCourseInfo" class="alert alert-info mb-16"></div>
+      <div id="paymentBankDetails" class="alert alert-info mt-12 mb-12" style="display:none; white-space:pre-wrap;"></div>
       <form id="paymentForm">
         <input type="hidden" name="course_id" id="pay-course-id">
         <div class="p-16 mb-20" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;font-size:0.9rem;line-height:1.6;color:#495057;">
