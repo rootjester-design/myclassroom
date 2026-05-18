@@ -1,3 +1,21 @@
+// ── CSRF Auto-Injection ────────────────────────────────
+const originalFetch = window.fetch;
+window.fetch = async function() {
+  let [resource, config] = arguments;
+  if (config && config.method && config.method.toUpperCase() === 'POST') {
+    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+    if (tokenMeta) {
+      config.headers = config.headers || {};
+      if (config.headers instanceof Headers) {
+        config.headers.append('X-CSRF-Token', tokenMeta.content);
+      } else {
+        config.headers['X-CSRF-Token'] = tokenMeta.content;
+      }
+    }
+  }
+  return originalFetch.apply(this, arguments);
+};
+
 // ── Shared Utilities ──────────────────────────────────
 function showToast(msg, type='info') {
   const icons = {success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};

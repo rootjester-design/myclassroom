@@ -72,9 +72,12 @@ function generateCsrfToken(): string {
     return $_SESSION[CSRF_TOKEN_NAME];
 }
 
-function verifyCsrfToken(string $token): bool {
+function verifyCsrfToken(?string $token = null): bool {
     startSession();
-    return isset($_SESSION[CSRF_TOKEN_NAME]) && hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
+    if ($token === null) {
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    }
+    return isset($_SESSION[CSRF_TOKEN_NAME]) && hash_equals($_SESSION[CSRF_TOKEN_NAME], (string)$token);
 }
 
 // ============================================================

@@ -12,6 +12,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="csrf-token" content="<?=generateCsrfToken()?>">
 <title>Course — MyClassroom</title>
 <link rel="stylesheet" href="../assets/css/main.css">
 <link rel="stylesheet" href="../assets/css/dashboard.css">

@@ -2,6 +2,7 @@
 require_once '../../includes/helpers.php';
 $user = requireAuth('super_admin');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
+if (!verifyCsrfToken()) jsonResponse(['success'=>false,'message'=>'Invalid CSRF token'],403);
 $db = Database::getInstance();
 
 $editId  = (int)($_POST['tutor_id']??0);

@@ -2,6 +2,7 @@
 require_once '../../includes/helpers.php';
 $user = requireAuth('tutor');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
+if (!verifyCsrfToken()) jsonResponse(['success'=>false,'message'=>'Invalid CSRF token'],403);
 $db = Database::getInstance(); $tid = $user['id'];
 $cid   = (int)($_POST['course_id']??0);
 $title = sanitize($_POST['title']??'');

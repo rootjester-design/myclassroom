@@ -2,6 +2,7 @@
 require_once '../../includes/helpers.php';
 $user = requireAuth('tutor');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
+if (!verifyCsrfToken()) jsonResponse(['success'=>false,'message'=>'Invalid CSRF token'],403);
 $db = Database::getInstance(); $tid = $user['id'];
 $field = isset($_FILES['profile_image']) ? 'profile_image' : (isset($_FILES['banner_image']) ? 'banner_image' : '');
 if (!$field) jsonResponse(['success'=>false,'message'=>'No image provided']);
