@@ -82,7 +82,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
   <div class="notif-list" id="notifList"></div>
 </div>
 
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/student.js"></script>
+<script src="../assets/js/main.js?v=<?=time()?>"></script>
+<script src="../assets/js/student.js?v=<?=time()?>"></script>
 </body>
 </html>
