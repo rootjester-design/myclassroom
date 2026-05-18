@@ -155,8 +155,10 @@ nav {
 .feature-desc { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
 
 /* Reviews */
-.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-.review-card { padding: 32px; border-radius: 24px; }
+.reviews-container { display: flex; gap: 24px; width: fit-content; animation: marquee 40s linear infinite reverse; }
+.marquee-wrapper:hover .reviews-container { animation-play-state: paused; }
+.review-card { padding: 32px; border-radius: 24px; width: 380px; flex-shrink: 0; text-align: left; transition: all 0.4s; }
+.review-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); }
 .review-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 .review-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
@@ -228,7 +230,6 @@ footer { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-
       <p class="hero-sub">Experience a world-class premium educational platform. Connect with expert tutors, access crystal-clear live classes, and master your subjects anytime.</p>
       <div class="hero-btns">
         <a href="auth/register.php" class="btn btn-primary btn-lg" style="padding:16px 32px; font-size:1.05rem;"><i class="fa fa-rocket"></i> Join for Free</a>
-        <a href="admin/login.php" class="btn btn-glass btn-lg" style="padding:16px 32px; font-size:1.05rem;"><i class="fa fa-chalkboard-teacher"></i> Tutor Portal</a>
       </div>
     </div>
     
@@ -283,7 +284,7 @@ footer { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-
         $name = htmlspecialchars($t['display_name'] ?: $t['first_name'].' '.$t['last_name']);
         $initials = strtoupper(substr($t['first_name'],0,1) . substr($t['last_name'],0,1));
       ?>
-      <a href="auth/login.php" class="tutor-card glass">
+      <a href="tutor-profile.php?id=<?=$t['id']?>" class="tutor-card glass">
         <?php if($t['profile_image']): ?>
           <img src="<?=htmlspecialchars($t['profile_image'])?>" class="tutor-avatar" alt="<?=$name?>">
         <?php else: ?>
@@ -369,27 +370,29 @@ footer { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-
     <h2>Student Success Stories</h2>
     <p>Hear directly from students who upgraded their learning with MyClassroom.</p>
   </div>
-  <div class="reviews-grid">
-    <?php foreach ($reviews as $rev): 
-      $name = htmlspecialchars($rev['first_name'] . ' ' . $rev['last_name']);
-    ?>
-    <div class="review-card glass">
-      <div class="review-header">
-        <?php if($rev['profile_image']): ?>
-          <img src="<?=htmlspecialchars($rev['profile_image'])?>" class="review-avatar" alt="<?=$name?>">
-        <?php else: ?>
-          <div class="review-avatar" style="background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;">
-            <?=strtoupper(substr($rev['first_name'],0,1).substr($rev['last_name'],0,1))?>
+  <div class="marquee-wrapper">
+    <div class="reviews-container">
+      <?php foreach (array_merge($reviews, $reviews) as $rev): 
+        $name = htmlspecialchars($rev['first_name'] . ' ' . $rev['last_name']);
+      ?>
+      <div class="review-card glass">
+        <div class="review-header">
+          <?php if($rev['profile_image']): ?>
+            <img src="<?=htmlspecialchars($rev['profile_image'])?>" class="review-avatar" alt="<?=$name?>">
+          <?php else: ?>
+            <div class="review-avatar" style="background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;">
+              <?=strtoupper(substr($rev['first_name'],0,1).substr($rev['last_name'],0,1))?>
+            </div>
+          <?php endif; ?>
+          <div>
+            <div style="font-weight:800;color:var(--text-main);"><?=$name?></div>
+            <div style="color:#f59e0b;font-size:0.85rem;margin-top:2px;"><?=str_repeat('★', $rev['rating'])?><?=str_repeat('☆', 5 - $rev['rating'])?></div>
           </div>
-        <?php endif; ?>
-        <div>
-          <div style="font-weight:800;color:var(--text-main);"><?=$name?></div>
-          <div style="color:#f59e0b;font-size:0.85rem;margin-top:2px;"><?=str_repeat('★', $rev['rating'])?><?=str_repeat('☆', 5 - $rev['rating'])?></div>
         </div>
+        <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.7;font-style:italic">"<?=htmlspecialchars($rev['review'])?>"</p>
       </div>
-      <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.7;font-style:italic">"<?=htmlspecialchars($rev['review'])?>"</p>
+      <?php endforeach; ?>
     </div>
-    <?php endforeach; ?>
   </div>
 </div>
 <?php endif; ?>
@@ -416,7 +419,6 @@ footer { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-
     <a href="#features">Features</a>
     <a href="#tutors">Top Tutors</a>
     <a href="auth/login.php">Student Login</a>
-    <a href="admin/login.php">Tutor/Admin Login</a>
   </div>
   <div style="font-size: 0.85rem; opacity: 0.6;">
     © <?=date('Y')?> MyClassroom.lk. All rights reserved. Built for the future of education.
