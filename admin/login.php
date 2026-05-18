@@ -15,6 +15,7 @@ if (isLoggedIn() && getAuthUser()['role']==='tutor') redirect('/tutor/dashboard.
 .auth-left{background:linear-gradient(150deg,#111 0%,#1a1a1a 60%,#2d2d2d 100%);}
 .auth-page{background:linear-gradient(135deg,#f5f5f5 0%,#fff 100%);}
 </style>
+<link rel="icon" type="image/png" href="../assets/img/logo-2.png">
 </head>
 <body>
 <div id="toast-container"></div>
