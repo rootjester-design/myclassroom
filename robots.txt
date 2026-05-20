@@ -13,4 +13,4 @@ Disallow: /tutor/
 Disallow: /vendor/
 
 # Sitemap location
-Sitemap: http://myclassroom.lk/sitemap.xml
+Sitemap: https://myclassroom.lk/sitemap.xml
