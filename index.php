@@ -23,6 +23,20 @@ $reviews = $db->fetchAll("SELECT r.rating, r.review, r.created_at, s.first_name,
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>MyClassroom — Premium Learning Management System</title>
 <meta name="description" content="MyClassroom is a premium online learning platform connecting students with expert tutors in Sri Lanka.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="<?=APP_URL?>/">
+<meta property="og:title" content="MyClassroom — Premium Learning Management System">
+<meta property="og:description" content="Connect with top educators and discover premium courses on MyClassroom. Sri Lanka's leading online education platform.">
+<meta property="og:image" content="<?=APP_URL?>/assets/img/logo-1.png">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="<?=APP_URL?>/">
+<meta name="twitter:title" content="MyClassroom — Premium Learning Management System">
+<meta name="twitter:description" content="Connect with top educators and discover premium courses on MyClassroom.">
+<meta name="twitter:image" content="<?=APP_URL?>/assets/img/logo-1.png">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">

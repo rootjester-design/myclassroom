@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Exclude sensitive or unhelpful directories
+Disallow: /admin/
+Disallow: /api/
+Disallow: /assets/
+Disallow: /auth/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /student/
+Disallow: /tutor/
+Disallow: /vendor/
+
+# Sitemap location
+Sitemap: http://myclassroom.lk/sitemap.xml

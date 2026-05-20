@@ -1,13 +1,50 @@
 <?php
 require_once 'includes/helpers.php';
 // Public page, no auth required
+
+$tutorId = (int)($_GET['id'] ?? 0);
+$db = Database::getInstance();
+$tutor = $db->fetch("SELECT * FROM tutors WHERE id=? AND is_approved=1", [$tutorId]);
+
+$pageTitle = "Tutor Profile — MyClassroom";
+$pageDesc = "Discover courses and learn from expert tutors on MyClassroom.";
+$pageImage = APP_URL . "/assets/img/logo-1.png";
+$pageUrl = APP_URL . "/tutor-profile.php" . ($tutor ? "?id=" . $tutorId : "");
+
+if ($tutor) {
+    $name = $tutor['display_name'] ?: ($tutor['first_name'] . ' ' . $tutor['last_name']);
+    $pageTitle = $name . " — MyClassroom";
+    if (!empty($tutor['subjects'])) {
+        $pageDesc = "Learn " . $tutor['subjects'] . " with " . $name . " on MyClassroom.";
+    } else {
+        $pageDesc = "View " . $name . "'s profile and premium courses on MyClassroom.";
+    }
+    if (!empty($tutor['profile_image'])) {
+        $pageImage = APP_URL . str_replace('..', '', $tutor['profile_image']);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Tutor Profile — MyClassroom</title>
+<title><?=htmlspecialchars($pageTitle)?></title>
+<meta name="description" content="<?=htmlspecialchars($pageDesc)?>">
+
+<!-- Open Graph -->
+<meta property="og:type" content="profile">
+<meta property="og:url" content="<?=htmlspecialchars($pageUrl)?>">
+<meta property="og:title" content="<?=htmlspecialchars($pageTitle)?>">
+<meta property="og:description" content="<?=htmlspecialchars($pageDesc)?>">
+<meta property="og:image" content="<?=htmlspecialchars($pageImage)?>">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="<?=htmlspecialchars($pageUrl)?>">
+<meta name="twitter:title" content="<?=htmlspecialchars($pageTitle)?>">
+<meta name="twitter:description" content="<?=htmlspecialchars($pageDesc)?>">
+<meta name="twitter:image" content="<?=htmlspecialchars($pageImage)?>">
 <link rel="stylesheet" href="assets/css/main.css?v=<?=time()?>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">

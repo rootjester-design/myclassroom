@@ -12,6 +12,7 @@ php_flag display_errors Off
     RewriteEngine On
     RewriteRule ^database/ - [F,L]
     RewriteRule ^config/ - [F,L]
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>
 
 # Security Headers
