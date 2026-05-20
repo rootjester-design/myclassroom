@@ -5,7 +5,7 @@
 
 define('APP_NAME', 'MyClassroom');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://myclassroom.lk'); // Change to your domain
+define('APP_URL', 'https://myclassroom.lk'); // Change to your domain
 
 // Database
 define('DB_PATH', dirname(__DIR__) . '/database/lms.db');
