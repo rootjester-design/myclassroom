@@ -362,11 +362,37 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
     $uploadPath = UPLOAD_DIR . $subDir . '/';
 
     if (!is_dir($uploadPath)) {
-        mkdir($uploadPath, 0755, true);
+        if (!mkdir($uploadPath, 0775, true)) {
+            $logDir = dirname(dirname(__DIR__)) . '/logs';
+            if (!is_dir($logDir)) @mkdir($logDir, 0775, true);
+            @file_put_contents($logDir . '/upload_errors.log',
+                date('[Y-m-d H:i:s] ') . "mkdir FAILED for: {$uploadPath} | UPLOAD_DIR=" . UPLOAD_DIR . " | is_writable(parent)=" . (is_writable(UPLOAD_DIR) ? 'yes' : 'no') . "\n",
+                FILE_APPEND);
+            return ['success' => false, 'message' => 'Failed to create upload directory. Check server folder permissions.'];
+        }
+    }
+
+    // Check upload directory is actually writable before attempting move
+    if (!is_writable($uploadPath)) {
+        $logDir = dirname(dirname(__DIR__)) . '/logs';
+        if (!is_dir($logDir)) @mkdir($logDir, 0775, true);
+        @file_put_contents($logDir . '/upload_errors.log',
+            date('[Y-m-d H:i:s] ') . "Directory NOT writable: {$uploadPath} | owner=" . (function_exists('posix_getpwuid') ? posix_getpwuid(fileowner($uploadPath))['name'] ?? '?' : '?') . "\n",
+            FILE_APPEND);
+        return ['success' => false, 'message' => 'Upload directory is not writable. Check server folder permissions.'];
     }
 
     if (!move_uploaded_file($file['tmp_name'], $uploadPath . $filename)) {
-        return ['success' => false, 'message' => 'Failed to save file.'];
+        // Log detailed failure info
+        $logDir = dirname(dirname(__DIR__)) . '/logs';
+        if (!is_dir($logDir)) @mkdir($logDir, 0775, true);
+        $tmpReadable = is_readable($file['tmp_name']) ? 'yes' : 'no';
+        $tmpExists   = file_exists($file['tmp_name']) ? 'yes' : 'no';
+        $destWritable = is_writable($uploadPath) ? 'yes' : 'no';
+        @file_put_contents($logDir . '/upload_errors.log',
+            date('[Y-m-d H:i:s] ') . "move_uploaded_file FAILED | tmp={$file['tmp_name']} | tmp_exists={$tmpExists} | tmp_readable={$tmpReadable} | dest={$uploadPath}{$filename} | dest_dir_writable={$destWritable} | php_tmp=" . ini_get('upload_tmp_dir') . "\n",
+            FILE_APPEND);
+        return ['success' => false, 'message' => 'Failed to save file. Check server permissions or PHP upload_tmp_dir configuration.'];
     }
 
     $publicPath = '/assets/uploads/' . $subDir . '/' . $filename;
