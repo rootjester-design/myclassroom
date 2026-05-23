@@ -3,8 +3,7 @@
 .env.local
 .env.production
 
-# Database files — keep out of version control
-database/
+# SQLite database files — contain real user data
 *.db
 *.sqlite
 *.sqlite3
@@ -23,7 +22,3 @@ Thumbs.db
 
 # PHP temp / cache
 *.cache
-
-# Old structure (safe to ignore if still present during migration)
-config/
-includes/
