@@ -1,0 +1,47 @@
+Options -Indexes
+php_flag display_errors Off
+php_value error_reporting 0
+
+# ── Block sensitive files by extension ────────────────────────────────────────
+<FilesMatch "\.(db|sqlite|sqlite3|env|log|json|md|txt|sql|sh|bak|old|htpasswd)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# ── Block sensitive paths ─────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block .git, .env, and any app/ or database/ paths if somehow reached
+    RewriteRule ^\.git/ - [F,L]
+    RewriteRule ^\.env$ - [F,L]
+
+    # Prevent PHP execution in uploads folder
+    RewriteRule ^assets/uploads/.*\.(php|php5|phtml|pl|py|cgi|sh)$ - [F,L]
+
+    # Sitemap XML
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+</IfModule>
+
+# ── Security Headers ──────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    # Uncomment once HTTPS is active:
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ── Cache Control for static assets ──────────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>

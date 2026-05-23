@@ -1,2 +1,29 @@
-database/*.db
-assets/uploads/
+# Environment & secrets — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Database files — keep out of version control
+database/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# PHP temp / cache
+*.cache
+
+# Old structure (safe to ignore if still present during migration)
+config/
+includes/

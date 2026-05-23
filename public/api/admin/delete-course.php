@@ -1,0 +1,10 @@
+﻿<?php
+require_once __DIR__ . '/../../../app/includes/helpers.php';
+$user = requireAuth('super_admin');
+if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
+if (!verifyCsrfToken()) jsonResponse(['success'=>false,'message'=>'Invalid CSRF token'],403);
+$db = Database::getInstance();
+$id = (int)($_POST['id']??0);
+if (!$id) jsonResponse(['success'=>false,'message'=>'ID required']);
+$db->execute("DELETE FROM courses WHERE id=?",[$id]);
+jsonResponse(['success'=>true,'message'=>'Course deleted']);
