@@ -7,9 +7,14 @@ window.fetch = async function() {
     if (tokenMeta) {
       config.headers = config.headers || {};
       if (config.headers instanceof Headers) {
-        config.headers.append('X-CSRF-Token', tokenMeta.content);
+        if (!config.headers.has('X-CSRF-Token') && !config.headers.has('X-CSRF-TOKEN') && !config.headers.has('x-csrf-token')) {
+          config.headers.append('X-CSRF-Token', tokenMeta.content);
+        }
       } else {
-        config.headers['X-CSRF-Token'] = tokenMeta.content;
+        const hasToken = Object.keys(config.headers).some(k => k.toLowerCase() === 'x-csrf-token');
+        if (!hasToken) {
+          config.headers['X-CSRF-Token'] = tokenMeta.content;
+        }
       }
     }
   }

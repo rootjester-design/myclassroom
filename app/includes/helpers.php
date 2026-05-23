@@ -91,7 +91,21 @@ function verifyCsrfToken(?string $token = null): bool {
     }
     $token = trim((string)$token);
     $sessionToken = $_SESSION[CSRF_TOKEN_NAME] ?? null;
-    $isValid = $sessionToken !== null && hash_equals($sessionToken, $token);
+    
+    $isValid = false;
+    if ($sessionToken !== null) {
+        if (strpos($token, ',') !== false) {
+            $tokens = array_map('trim', explode(',', $token));
+            foreach ($tokens as $t) {
+                if (hash_equals($sessionToken, $t)) {
+                    $isValid = true;
+                    break;
+                }
+            }
+        } else {
+            $isValid = hash_equals($sessionToken, $token);
+        }
+    }
     if (!$isValid) {
         $logData = [
             'timestamp' => date('Y-m-d H:i:s'),
