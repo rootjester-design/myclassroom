@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../app/includes/helpers.php';
 $user = requireAuth('tutor');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
@@ -26,7 +26,8 @@ if (!$title) jsonResponse(['success'=>false,'message'=>'Course title required'])
 $thumbnail = null;
 if (!empty($_FILES['thumbnail']['name'])) {
     $up = uploadFile($_FILES['thumbnail'],'thumbnails',ALLOWED_IMAGE_TYPES);
-    if ($up['success']) $thumbnail = $up['path'];
+    if (!$up['success']) jsonResponse(['success'=>false,'message'=>$up['message']]);
+    $thumbnail = $up['path'];
 }
 
 // Check if editing (course_id passed and belongs to tutor)

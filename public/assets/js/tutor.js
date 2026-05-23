@@ -219,6 +219,7 @@ async function uploadTutorAvatar(input){
     fd.append('profile_image', blob, file.name);
     const d = await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
     if(d.success){showToast('Photo updated','success');location.reload();}else showToast(d.message||'Failed','error');
+    input.value = '';
     window.onImageCropped = null;
   };
   openImageCropper(file, { aspectRatio: 1 });
@@ -232,6 +233,7 @@ async function uploadBanner(input){
     fd.append('banner_image', blob, file.name);
     const d = await api('../api/tutor/upload-image.php',{method:'POST',body:fd});
     if(d.success){showToast('Banner updated','success');location.reload();}else showToast(d.message||'Failed','error');
+    input.value = '';
     window.onImageCropped = null;
   };
   openImageCropper(file, { aspectRatio: 820 / 312 });

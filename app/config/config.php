@@ -47,7 +47,7 @@ define('OTP_EXPIRY', 300); // 5 minutes
 
 // ── Upload Settings ───────────────────────────────────────────────────────────
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
-define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/pjpeg', 'image/x-png']);
 define('ALLOWED_DOC_TYPES', ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
 
 // ── Security ──────────────────────────────────────────────────────────────────

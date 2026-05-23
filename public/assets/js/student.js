@@ -417,6 +417,7 @@ async function uploadProfilePic(input) {
     const d = await apiFetch('../api/student/upload-avatar.php', { method: 'POST', body: fd });
     if (d.success) { showToast('Photo updated!','success'); location.reload(); }
     else showToast(d.message || 'Failed','error');
+    input.value = '';
     window.onImageCropped = null;
   };
 

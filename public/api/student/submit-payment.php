@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../app/includes/helpers.php';
 $user = requireAuth('student');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
@@ -24,7 +24,7 @@ if ($pending) jsonResponse(['success'=>false,'message'=>'You already have a pend
 $course = $db->fetch("SELECT * FROM courses WHERE id=? AND is_active=1",[$courseId]);
 if (!$course) jsonResponse(['success'=>false,'message'=>'Course not found']);
 
-$upload = uploadFile($_FILES['payment_slip'],'payments',ALLOWED_IMAGE_TYPES);
+$upload = uploadFile($_FILES['payment_slip'],'payments',array_merge(ALLOWED_IMAGE_TYPES,['application/pdf']));
 if (!$upload['success']) jsonResponse(['success'=>false,'message'=>$upload['message']]);
 
 $db->insert("INSERT INTO payments (student_id,course_id,tutor_id,amount,payment_reference,payment_slip,notes,status) VALUES (?,?,?,?,?,?,?,'pending')",

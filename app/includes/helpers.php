@@ -323,8 +323,22 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
         return ['success' => false, 'message' => 'File too large. Max 5MB allowed.'];
     }
 
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mimeType = $finfo->file($file['tmp_name']);
+    // Robust MIME detection with multiple fallbacks
+    $mimeType = false;
+    if (class_exists('finfo')) {
+        try {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($file['tmp_name']);
+        } catch (Exception $e) {
+            $mimeType = false;
+        }
+    }
+    if (!$mimeType && function_exists('mime_content_type')) {
+        $mimeType = mime_content_type($file['tmp_name']);
+    }
+    if (!$mimeType) {
+        $mimeType = $file['type'] ?? '';
+    }
 
     $allowed = empty($allowedTypes) ? array_merge(ALLOWED_IMAGE_TYPES, ALLOWED_DOC_TYPES) : $allowedTypes;
     if (!in_array($mimeType, $allowed)) {
@@ -333,7 +347,10 @@ function uploadFile(array $file, string $subDir = 'misc', array $allowedTypes = 
 
     $mimeToExt = [
         'image/jpeg' => 'jpg',
+        'image/jpg'  => 'jpg',
+        'image/pjpeg'=> 'jpg',
         'image/png'  => 'png',
+        'image/x-png'=> 'png',
         'image/gif'  => 'gif',
         'image/webp' => 'webp',
         'application/pdf' => 'pdf'
