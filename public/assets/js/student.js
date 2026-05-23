@@ -4,6 +4,23 @@ let currentTab = 'home';
 let storeData = {tutors:[], courses:[]};
 let storeCurrentView = 'tutors';
 
+// ── CSRF-aware fetch helper ─────────────────────────────
+const _csrfMeta = document.querySelector('meta[name="csrf-token"]');
+const _csrfToken = _csrfMeta ? _csrfMeta.getAttribute('content') : '';
+async function apiFetch(url, opts={}) {
+  const headers = Object.assign({
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-CSRF-TOKEN': _csrfToken
+  }, opts.headers || {});
+  if (opts.body instanceof FormData || opts.body instanceof URLSearchParams) {
+    delete headers['Content-Type'];
+  }
+  const res = await fetch(url, Object.assign({}, opts, { headers }));
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { return { success: false, message: text || 'Server error' }; }
+}
+
 function switchTab(name, el) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   const tab = document.getElementById('tab-'+name);
@@ -203,8 +220,7 @@ async function saveNote(courseId) {
   const content = document.getElementById('noteContent').value.trim();
   if (!title) { showToast('Enter a note title','warning'); return; }
   const fd = new FormData(); fd.append('course_id',courseId); fd.append('title',title); fd.append('content',content);
-  const res = await fetch('../api/student/save-note.php',{method:'POST',body:fd});
-  const d = await res.json();
+  const d = await apiFetch('../api/student/save-note.php',{method:'POST',body:fd});
   if(d.success){showToast('Note saved!','success');document.getElementById('noteTitle').value='';document.getElementById('noteContent').value='';}
   else showToast(d.message||'Failed','error');
 }
@@ -290,8 +306,7 @@ async function submitTutorRating(tutorId) {
     fd.append('tutor_id', tutorId);
     fd.append('rating', rating);
     fd.append('review', review);
-    const res = await fetch('../api/student/rate-tutor.php',{method:'POST',body:fd});
-    const d = await res.json();
+    const d = await apiFetch('../api/student/rate-tutor.php',{method:'POST',body:fd});
     if (d.success) { showToast(d.message || 'Review submitted','success'); location.reload(); }
     else showToast(d.message || 'Failed to submit review','error');
   } catch(err) { showToast('Network error','error'); }
@@ -338,8 +353,7 @@ document.getElementById('paymentForm').addEventListener('submit', async e => {
   btn.disabled=true; btn.textContent='Submitting...';
   try {
     const fd = new FormData(e.target);
-    const res = await fetch('../api/student/submit-payment.php',{method:'POST',body:fd});
-    const d = await res.json();
+    const d = await apiFetch('../api/student/submit-payment.php',{method:'POST',body:fd});
     if(d.success){showToast('Payment submitted! Awaiting approval.','success');closeModal('paymentModal');e.target.reset();}
     else showToast(d.message||'Failed to submit','error');
   } catch(err){showToast('Network error','error');}
@@ -348,12 +362,9 @@ document.getElementById('paymentForm').addEventListener('submit', async e => {
 
 async function enrollFreeCourse(courseId) {
   try {
-    const res = await fetch('../api/student/enroll-free.php', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({course_id: courseId})
-    });
-    const d = await res.json();
+    const fd = new FormData();
+    fd.append('course_id', courseId);
+    const d = await apiFetch('../api/student/enroll-free.php', {method:'POST', body:fd});
     if(d.success) {
       showToast('Enrolled successfully!','success');
       if (document.getElementById('store-courses')) {
@@ -374,8 +385,7 @@ document.getElementById('settingsForm').addEventListener('submit', async e => {
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled=true; btn.textContent='Saving...';
   try {
-    const res = await fetch('../api/student/update-profile.php',{method:'POST',body:new FormData(e.target)});
-    const d = await res.json();
+    const d = await apiFetch('../api/student/update-profile.php',{method:'POST',body:new FormData(e.target)});
     if(d.success) showToast('Profile updated!','success');
     else showToast(d.message||'Failed','error');
   } catch(err){showToast('Network error','error');}
@@ -389,8 +399,7 @@ if (siteReviewForm) {
     const btn = e.target.querySelector('button[type=submit]');
     btn.disabled=true; btn.textContent='Submitting...';
     try {
-      const res = await fetch('../api/student/submit-site-review.php',{method:'POST',body:new FormData(e.target)});
-      const d = await res.json();
+      const d = await apiFetch('../api/student/submit-site-review.php',{method:'POST',body:new FormData(e.target)});
       if(d.success) { showToast('Review submitted successfully!','success'); e.target.reset(); }
       else showToast(d.message||'Failed','error');
     } catch(err){showToast('Network error','error');}
@@ -405,8 +414,7 @@ async function uploadProfilePic(input) {
   window.onImageCropped = async (blob) => {
     const fd = new FormData();
     fd.append('profile_image', blob, file.name);
-    const res = await fetch('../api/student/upload-avatar.php', { method: 'POST', body: fd });
-    const d = await res.json();
+    const d = await apiFetch('../api/student/upload-avatar.php', { method: 'POST', body: fd });
     if (d.success) { showToast('Photo updated!','success'); location.reload(); }
     else showToast(d.message || 'Failed','error');
     window.onImageCropped = null;

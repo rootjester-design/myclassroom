@@ -2,10 +2,14 @@ const tabTitles={overview:'Dashboard Overview',tutors:'Tutor Management',student
 let allTutors=[],allStudents=[],allPayments=[],currentPayStatus='pending';
 
 // Core API helper — sends proper headers so PHP isAjax() returns true
+const _csrfMeta = document.querySelector('meta[name="csrf-token"]');
+const _csrfToken = _csrfMeta ? _csrfMeta.getAttribute('content') : '';
+
 async function api(url, opts={}) {
   const headers = Object.assign({
     'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-CSRF-TOKEN': _csrfToken
   }, opts.headers || {});
   // Don't set Content-Type for FormData (browser does it)
   if (!(opts.body instanceof FormData || opts.body instanceof URLSearchParams)) {

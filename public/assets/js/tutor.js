@@ -19,17 +19,21 @@ function switchTab(name,el){
   if(name==='announcements')loadAnnouncements();
 }
 
+const _csrfMeta = document.querySelector('meta[name="csrf-token"]');
+const _csrfToken = _csrfMeta ? _csrfMeta.getAttribute('content') : '';
+
 async function api(url, opts={}) {
   const headers = Object.assign({
     'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-CSRF-TOKEN': _csrfToken
   }, opts.headers || {});
   if (opts.body instanceof FormData || opts.body instanceof URLSearchParams) {
     delete headers['Content-Type'];
   }
   const res = await fetch(url, Object.assign({}, opts, { headers }));
   if (!res.ok && res.status === 401) {
-    window.location.href = '../admin/login.php';
+    window.location.href = '../auth/login.php';
     return { success: false };
   }
   const text = await res.text();
