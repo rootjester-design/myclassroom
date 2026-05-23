@@ -22,3 +22,8 @@ Thumbs.db
 
 # PHP temp / cache
 *.cache
+public/assets/uploads/materials/*
+public/assets/uploads/payments/*
+public/assets/uploads/profiles/*
+public/assets/uploads/tutor-banner_image/*
+public/assets/uploads/tutor-profile_image/*
