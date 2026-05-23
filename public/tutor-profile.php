@@ -1,5 +1,5 @@
-﻿<?php
-require_once __DIR__ . '/../../app/includes/helpers.php';
+<?php
+require_once __DIR__ . '/../app/includes/helpers.php';
 // Public page, no auth required
 
 $tutorId = (int)($_GET['id'] ?? 0);

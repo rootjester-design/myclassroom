@@ -1,5 +1,5 @@
-﻿<?php
-require_once __DIR__ . '/../../app/includes/helpers.php';
+<?php
+require_once __DIR__ . '/../app/includes/helpers.php';
 $db = Database::getInstance();
 try {
     $db->execute("ALTER TABLE tutors ADD COLUMN bank_details TEXT NULL");

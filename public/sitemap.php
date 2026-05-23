@@ -1,5 +1,5 @@
-﻿<?php
-require_once __DIR__ . '/../../app/includes/helpers.php';
+<?php
+require_once __DIR__ . '/../app/includes/helpers.php';
 
 header("Content-Type: application/xml; charset=utf-8");
 
