@@ -314,13 +314,30 @@ function assetUrl(string $path): string {
     if (!$path) return '';
     // If it's already an absolute URL, return as-is
     if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) return $path;
-    // If it's a site-root relative path, build absolute URL using current scheme and host
-    if (strpos($path, '/') === 0) {
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? parse_url(APP_URL, PHP_URL_HOST);
-        return $scheme . '://' . $host . $path;
+    
+    // Standardize local path with a leading slash
+    $localPath = $path;
+    if (strpos($localPath, '/') !== 0) {
+        $localPath = '/' . $localPath;
     }
-    return $path;
+    
+    // Clean potential relative path characters
+    $cleanPath = str_replace('..', '', $localPath);
+    
+    // Resolve absolute path on disk relative to public root
+    // helpers.php is in app/includes/, so public is at __DIR__ . '/../../public'
+    $diskPath = __DIR__ . '/../../public' . $cleanPath;
+    
+    // If it is inside the uploads folder and physically does not exist on disk, return empty string.
+    // This allows PHP templates and JS frontends to fallback gracefully to initials/placeholders.
+    if (strpos($cleanPath, '/assets/uploads/') === 0 && !file_exists($diskPath)) {
+        return '';
+    }
+    
+    // Build absolute URL using current scheme and host
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? parse_url(APP_URL, PHP_URL_HOST);
+    return $scheme . '://' . $host . $cleanPath;
 }
 
 // Backwards-compatible alias
