@@ -75,9 +75,41 @@ function generateCsrfToken(): string {
 function verifyCsrfToken(?string $token = null): bool {
     startSession();
     if ($token === null) {
-        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if (isset($_POST['csrf_token'])) {
+            $token = $_POST['csrf_token'];
+        } else if (isset($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+            $token = $_SERVER['HTTP_X_CSRF_TOKEN'];
+        } else if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            foreach ($headers as $name => $value) {
+                if (strcasecmp($name, 'X-CSRF-Token') === 0 || strcasecmp($name, 'X-CSRF-TOKEN') === 0) {
+                    $token = $value;
+                    break;
+                }
+            }
+        }
     }
-    return isset($_SESSION[CSRF_TOKEN_NAME]) && hash_equals($_SESSION[CSRF_TOKEN_NAME], (string)$token);
+    $token = trim((string)$token);
+    $sessionToken = $_SESSION[CSRF_TOKEN_NAME] ?? null;
+    $isValid = $sessionToken !== null && hash_equals($sessionToken, $token);
+    if (!$isValid) {
+        $logData = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'uri' => $_SERVER['REQUEST_URI'] ?? '',
+            'method' => $_SERVER['REQUEST_METHOD'] ?? '',
+            'session_id' => session_id(),
+            'session_token' => $sessionToken,
+            'received_token' => $token,
+            'post' => $_POST,
+            'headers' => function_exists('getallheaders') ? getallheaders() : []
+        ];
+        $logFile = dirname(dirname(__DIR__)) . '/logs/csrf_debug.log';
+        if (!is_dir(dirname($logFile))) {
+            mkdir(dirname($logFile), 0755, true);
+        }
+        file_put_contents($logFile, json_encode($logData, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
+    }
+    return $isValid;
 }
 
 // ============================================================

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../app/includes/helpers.php';
 header('Content-Type: application/json');
 
@@ -35,7 +35,7 @@ if ($loginType === 'student') {
                 }
             }
         }
-        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/student/dashboard.php']);
+        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/student/dashboard.php']);
     }
 } elseif ($loginType === 'admin_tutor') {
     // Try tutor login
@@ -45,7 +45,7 @@ if ($loginType === 'student') {
         if (!$tutor['is_approved']) jsonResponse(['success'=>false,'message'=>'Your account is pending approval.']);
         loginUser($tutor, 'tutor');
         logActivity((int)$tutor['id'],'tutor','login','Tutor logged in');
-        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/tutor/dashboard.php']);
+        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/tutor/dashboard.php']);
     }
 
     // Try admin login
@@ -55,7 +55,7 @@ if ($loginType === 'student') {
         loginUser($admin, 'super_admin');
         $db->execute("UPDATE admins SET last_login=datetime('now') WHERE id=?",[$admin['id']]);
         logActivity((int)$admin['id'],'admin','login','Admin logged in');
-        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>APP_URL . '/admin/dashboard.php']);
+        jsonResponse(['success'=>true,'message'=>'Login successful','redirect'=>'/admin/dashboard.php']);
     }
 }
 
