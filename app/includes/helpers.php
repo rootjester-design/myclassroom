@@ -194,7 +194,9 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
     // Send via Text.lk API
     $message = "Your MyClassroom verification code is: {$otp}. Valid for 5 minutes. Do not share this code.";
 
-    if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY' || ($_ENV['APP_ENV'] ?? 'production') === 'development') {
+    $isDev = (($_ENV['APP_ENV'] ?? 'production') === 'development');
+
+    if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY') {
         // Development mode: return OTP directly
         return ['success' => true, 'message' => 'OTP sent (dev mode)', 'otp' => $otp];
     }
@@ -204,8 +206,12 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
     $payload = json_encode([
         'recipient' => $formattedPhone,
         'sender_id' => TEXTLK_SENDER_ID,
+        'type'      => 'plain',
         'message'   => $message,
     ]);
+
+    $httpCode = 0;
+    $response = null;
 
     if (function_exists('curl_init')) {
         $ch = curl_init('https://app.text.lk/api/v3/sms/send');
@@ -233,31 +239,61 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
             $httpCode = (int)$matches[1];
         }
     } else {
+        if ($isDev) {
+            return ['success' => true, 'message' => 'OTP sent (dev fallback)', 'otp' => $otp];
+        }
         return ['success' => false, 'message' => 'PHP cURL is not installed and allow_url_fopen is disabled. Install php-curl or enable allow_url_fopen to send OTPs.'];
     }
 
-    if ($httpCode === 200) {
-        return ['success' => true, 'message' => 'OTP sent successfully'];
+    $apiSuccess = false;
+    if ($response) {
+        $resData = json_decode($response, true);
+        if (isset($resData['status']) && ($resData['status'] === true || $resData['status'] === 'success')) {
+            $apiSuccess = true;
+        }
+    }
+
+    if ($httpCode === 200 && $apiSuccess) {
+        $res = ['success' => true, 'message' => 'OTP sent successfully'];
+        if ($isDev) {
+            $res['otp'] = $otp;
+        }
+        return $res;
+    }
+
+    if ($isDev) {
+        return ['success' => true, 'message' => 'OTP sent (dev fallback - send failed)', 'otp' => $otp];
     }
 
     $error = 'Failed to send OTP. Please try again.';
-    if (isset($response) && $response) {
-        $error = trim(strip_tags($response));
+    if ($response) {
+        $resData = json_decode($response, true);
+        if (isset($resData['message'])) {
+            $error = $resData['message'];
+        } else {
+            $error = trim(strip_tags($response));
+        }
     }
     return ['success' => false, 'message' => $error];
 }
 
 function sendSms(string $phone, string $message): array {
-    $formattedPhone = formatPhone($phone);
-    $payload = json_encode([
-        'recipient' => $formattedPhone,
-        'sender_id' => TEXTLK_SENDER_ID,
-        'message' => $message,
-    ]);
+    $isDev = (($_ENV['APP_ENV'] ?? 'production') === 'development');
 
     if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY') {
         return ['success' => true, 'message' => 'SMS sent (dev mode)'];
     }
+
+    $formattedPhone = formatPhone($phone);
+    $payload = json_encode([
+        'recipient' => $formattedPhone,
+        'sender_id' => TEXTLK_SENDER_ID,
+        'type'      => 'plain',
+        'message'   => $message,
+    ]);
+
+    $httpCode = 0;
+    $response = null;
 
     if (function_exists('curl_init')) {
         $ch = curl_init('https://app.text.lk/api/v3/sms/send');
@@ -285,16 +321,36 @@ function sendSms(string $phone, string $message): array {
             $httpCode = (int)$matches[1];
         }
     } else {
+        if ($isDev) {
+            return ['success' => true, 'message' => 'SMS sent (dev fallback)'];
+        }
         return ['success' => false, 'message' => 'PHP cURL is not installed and allow_url_fopen is disabled.'];
     }
 
-    if ($httpCode === 200) {
+    $apiSuccess = false;
+    if ($response) {
+        $resData = json_decode($response, true);
+        if (isset($resData['status']) && ($resData['status'] === true || $resData['status'] === 'success')) {
+            $apiSuccess = true;
+        }
+    }
+
+    if ($httpCode === 200 && $apiSuccess) {
         return ['success' => true, 'message' => 'SMS sent successfully'];
     }
 
+    if ($isDev) {
+        return ['success' => true, 'message' => 'SMS sent (dev fallback - send failed)'];
+    }
+
     $error = 'Failed to send SMS. Please try again.';
-    if (isset($response) && $response) {
-        $error = trim(strip_tags($response));
+    if ($response) {
+        $resData = json_decode($response, true);
+        if (isset($resData['message'])) {
+            $error = $resData['message'];
+        } else {
+            $error = trim(strip_tags($response));
+        }
     }
     return ['success' => false, 'message' => $error];
 }
