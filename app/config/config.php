@@ -12,7 +12,13 @@ if (file_exists($_envFile)) {
         if ($_line === '' || str_starts_with($_line, '#')) continue;
         if (str_contains($_line, '=')) {
             [$_key, $_val] = explode('=', $_line, 2);
-            $_ENV[trim($_key)] = trim($_val);
+            $_key = trim($_key);
+            $_val = trim($_val);
+            if ((str_starts_with($_val, '"') && str_ends_with($_val, '"')) || 
+                (str_starts_with($_val, "'") && str_ends_with($_val, "'"))) {
+                $_val = substr($_val, 1, -1);
+            }
+            $_ENV[$_key] = $_val;
         }
     }
     unset($lines, $_line, $_key, $_val);
