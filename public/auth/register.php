@@ -149,7 +149,7 @@ async function sendOtp(){
     if (data.success) {
       verifiedPhone = '0' + phone.replace(/^0/, '');
       document.getElementById('otp-subtitle').textContent = `OTP sent to +94${phone.replace(/^0/, '')}`;
-      if (data.otp) showToast(`Dev OTP: ${data.otp}`, 'info'); else showToast('OTP sent!','success');
+      showToast('OTP sent! Check your phone.', 'success');
       goStep(2);
       startTimer();
     } else {
