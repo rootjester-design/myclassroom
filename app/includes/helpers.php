@@ -212,6 +212,7 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
 
     $httpCode = 0;
     $response = null;
+    $errorMsg = '';
 
     if (function_exists('curl_init')) {
         $ch = curl_init('https://app.text.lk/api/v3/sms/send');
@@ -220,9 +221,25 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => ['Content-Type: application/json', 'Authorization: Bearer ' . TEXTLK_API_KEY],
             CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_TIMEOUT        => 15,
         ]);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($response === false) {
+            $curlErrNo = curl_errno($ch);
+            $curlError = curl_error($ch);
+            error_log("Text.lk API connection failed (cURL error {$curlErrNo}: {$curlError}). Retrying with SSL verification disabled...");
+            
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($response === false) {
+                $errorMsg = 'cURL connection error: ' . curl_error($ch);
+            } else {
+                $errorMsg = 'Succeeded after disabling SSL verification';
+            }
+        }
         curl_close($ch);
     } elseif (ini_get('allow_url_fopen')) {
         $context = stream_context_create([
@@ -233,10 +250,35 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
                 'ignore_errors' => true,
             ],
         ]);
-        $response = file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
+        $response = @file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
         $httpCode = null;
         if (isset($http_response_header) && preg_match('#HTTP/\d\.\d\s+(\d{3})#', $http_response_header[0], $matches)) {
             $httpCode = (int)$matches[1];
+        }
+        
+        if ($response === false) {
+            error_log("Text.lk API stream connection failed. Retrying with SSL verification disabled...");
+            $context = stream_context_create([
+                'http' => [
+                    'method'  => 'POST',
+                    'header'  => "Content-Type: application/json\r\nAuthorization: Bearer " . TEXTLK_API_KEY . "\r\n",
+                    'content' => $payload,
+                    'ignore_errors' => true,
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ]
+            ]);
+            $response = @file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
+            if (isset($http_response_header) && preg_match('#HTTP/\d\.\d\s+(\d{3})#', $http_response_header[0], $matches)) {
+                $httpCode = (int)$matches[1];
+            }
+            if ($response === false) {
+                $errorMsg = 'file_get_contents failed';
+            } else {
+                $errorMsg = 'Succeeded after disabling stream SSL verification';
+            }
         }
     } else {
         if ($isDev) {
@@ -265,7 +307,13 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
         } else {
             $error = trim(strip_tags($response));
         }
+    } else {
+        if (!empty($errorMsg)) {
+            $error = 'SMS Gateway connection error: ' . $errorMsg;
+        }
     }
+
+    error_log("sendOtp failed. Phone: {$phone}, HTTP Code: {$httpCode}, Connection Msg: {$errorMsg}, Response: {$response}");
     return ['success' => false, 'message' => $error];
 }
 
@@ -286,6 +334,7 @@ function sendSms(string $phone, string $message): array {
 
     $httpCode = 0;
     $response = null;
+    $errorMsg = '';
 
     if (function_exists('curl_init')) {
         $ch = curl_init('https://app.text.lk/api/v3/sms/send');
@@ -294,9 +343,25 @@ function sendSms(string $phone, string $message): array {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Authorization: Bearer ' . TEXTLK_API_KEY],
             CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_TIMEOUT => 15,
         ]);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($response === false) {
+            $curlErrNo = curl_errno($ch);
+            $curlError = curl_error($ch);
+            error_log("Text.lk SMS connection failed (cURL error {$curlErrNo}: {$curlError}). Retrying with SSL verification disabled...");
+            
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($response === false) {
+                $errorMsg = 'cURL connection error: ' . curl_error($ch);
+            } else {
+                $errorMsg = 'Succeeded after disabling SSL verification';
+            }
+        }
         curl_close($ch);
     } elseif (ini_get('allow_url_fopen')) {
         $context = stream_context_create([
@@ -307,10 +372,35 @@ function sendSms(string $phone, string $message): array {
                 'ignore_errors' => true,
             ],
         ]);
-        $response = file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
+        $response = @file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
         $httpCode = null;
         if (isset($http_response_header) && preg_match('#HTTP/\d\.\d\s+(\d{3})#', $http_response_header[0], $matches)) {
             $httpCode = (int)$matches[1];
+        }
+        
+        if ($response === false) {
+            error_log("Text.lk SMS stream connection failed. Retrying with SSL verification disabled...");
+            $context = stream_context_create([
+                'http' => [
+                    'method'  => 'POST',
+                    'header'  => "Content-Type: application/json\r\nAuthorization: Bearer " . TEXTLK_API_KEY . "\r\n",
+                    'content' => $payload,
+                    'ignore_errors' => true,
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ]
+            ]);
+            $response = @file_get_contents('https://app.text.lk/api/v3/sms/send', false, $context);
+            if (isset($http_response_header) && preg_match('#HTTP/\d\.\d\s+(\d{3})#', $http_response_header[0], $matches)) {
+                $httpCode = (int)$matches[1];
+            }
+            if ($response === false) {
+                $errorMsg = 'file_get_contents failed';
+            } else {
+                $errorMsg = 'Succeeded after disabling stream SSL verification';
+            }
         }
     } else {
         if ($isDev) {
@@ -343,7 +433,13 @@ function sendSms(string $phone, string $message): array {
         } else {
             $error = trim(strip_tags($response));
         }
+    } else {
+        if (!empty($errorMsg)) {
+            $error = 'SMS Gateway connection error: ' . $errorMsg;
+        }
     }
+    
+    error_log("sendSms failed. Phone: {$phone}, HTTP Code: {$httpCode}, Connection Msg: {$errorMsg}, Response: {$response}");
     return ['success' => false, 'message' => $error];
 }
 
