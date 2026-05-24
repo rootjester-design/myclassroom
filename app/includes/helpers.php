@@ -254,15 +254,7 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
     }
 
     if ($httpCode === 200 && $apiSuccess) {
-        $res = ['success' => true, 'message' => 'OTP sent successfully'];
-        if ($isDev) {
-            $res['otp'] = $otp;
-        }
-        return $res;
-    }
-
-    if ($isDev) {
-        return ['success' => true, 'message' => 'OTP sent (dev fallback - send failed)', 'otp' => $otp];
+        return ['success' => true, 'message' => 'OTP sent successfully'];
     }
 
     $error = 'Failed to send OTP. Please try again.';
