@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../app/includes/helpers.php';
 if (isLoggedIn()) redirect('/student/dashboard.php');
 ?>
@@ -130,7 +130,7 @@ function showToast(msg,type='info'){const icons={success:'✅',error:'❌',warni
 function goStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('step'+i);if(el)el.classList.toggle('hidden',i!==n);});document.getElementById('step1-dot').className='step-dot'+(n>=1?' active':'');document.getElementById('step2-dot').className='step-dot'+(n===2?' active':n>2?' done':'');document.getElementById('step3-dot').className='step-dot'+(n===3?' active':'');document.getElementById('line1').className='step-line'+(n>1?' done':'');document.getElementById('line2').className='step-line'+(n>2?' done':'');}
 function setLoading(b,t,s,txt,on){document.getElementById(b).disabled=on;document.getElementById(t).textContent=txt;document.getElementById(s).classList.toggle('hidden',!on);}
 async function sendOtp(){
-  const phone = document.getElementById('reg-phone').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim().replace(/\D/g, '');
   document.getElementById('phone-err').textContent = '';
   if (!phone || phone.length < 9) {
     document.getElementById('phone-err').textContent = 'Enter a valid phone number';
@@ -148,7 +148,7 @@ async function sendOtp(){
     try { data = JSON.parse(text); } catch (parseErr) { throw new Error(text || 'Invalid server response'); }
     if (data.success) {
       verifiedPhone = '0' + phone.replace(/^0/, '');
-      document.getElementById('otp-subtitle').textContent = `OTP sent to +94${phone}`;
+      document.getElementById('otp-subtitle').textContent = `OTP sent to +94${phone.replace(/^0/, '')}`;
       if (data.otp) showToast(`Dev OTP: ${data.otp}`, 'info'); else showToast('OTP sent!','success');
       goStep(2);
       startTimer();
@@ -166,6 +166,7 @@ document.querySelectorAll('.otp-input').forEach((inp,idx,all)=>{
   inp.addEventListener('keydown', (e)=>{ if (e.key === 'Backspace' && !inp.value && idx > 0) all[idx-1].focus(); });
   inp.addEventListener('paste', (e)=>{ e.preventDefault(); const p = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6); [...p].forEach((c,i)=>{ if (all[i]){ all[i].value = c; all[i].classList.add('filled'); }}); if (all[p.length-1]) all[p.length-1].focus(); });
 });
+document.getElementById('reg-phone').addEventListener('input', (e)=>{ e.target.value = e.target.value.replace(/\D/g,''); });
 
 async function verifyOtp(){
   const otp = [...document.querySelectorAll('.otp-input')].map(i=>i.value).join('');

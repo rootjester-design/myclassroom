@@ -177,7 +177,7 @@ function formatPhone(string $phone): string {
 function sendOtp(string $phone, string $purpose = 'register'): array {
     $db = Database::getInstance();
     $otp = str_pad(random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
-    $expiresAt = date('Y-m-d H:i:s', time() + OTP_EXPIRY);
+    $expiresAt = gmdate('Y-m-d H:i:s', time() + OTP_EXPIRY);
 
     // Invalidate old OTPs
     $db->execute(
@@ -194,7 +194,7 @@ function sendOtp(string $phone, string $purpose = 'register'): array {
     // Send via Text.lk API
     $message = "Your MyClassroom verification code is: {$otp}. Valid for 5 minutes. Do not share this code.";
 
-    if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY') {
+    if (TEXTLK_API_KEY === 'YOUR_TEXTLK_API_KEY' || ($_ENV['APP_ENV'] ?? 'production') === 'development') {
         // Development mode: return OTP directly
         return ['success' => true, 'message' => 'OTP sent (dev mode)', 'otp' => $otp];
     }
