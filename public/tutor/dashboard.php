@@ -271,8 +271,46 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
       <form id="recordingForm">
         <div class="form-group"><label class="form-label">Course *</label><select name="course_id" class="form-control" id="recCourseSelect"></select></div>
         <div class="form-group"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" required></div>
-        <div class="form-group" style="display:none;"><label class="form-label">Bunny Video ID</label><input type="text" name="bunny_video_id" class="form-control" placeholder="Bunny Video ID"></div>
-        <div class="form-group"><label class="form-label">Video Link or ID *</label><input type="text" name="video_url" class="form-control" placeholder="Bunny.net Video ID or Link" required><p class="fs-xs text-muted mt-4">Paste the Video ID or the direct link provided by the admin.</p></div>
+        <div class="form-group">
+          <label class="form-label">Video Source</label>
+          <select id="recordingSourceSelect" class="form-control" onchange="toggleRecordingSource(this.value)">
+            <option value="private">Private (Bunny.net)</option>
+            <option value="youtube">YouTube</option>
+          </select>
+        </div>
+        <div id="privateVideoGroup" class="form-group">
+          <label class="form-label">Video Link or ID *</label>
+          <input type="text" id="privateVideoInput" name="video_url" class="form-control" placeholder="Bunny.net Video ID or Link" required>
+          <p class="fs-xs text-muted mt-4">Paste the Video ID or the direct link provided by the admin.</p>
+        </div>
+        <div id="youtubeVideoGroup" class="form-group" style="display:none;">
+          <label class="form-label">YouTube URL *</label>
+          <input type="url" id="youtubeVideoInput" class="form-control" placeholder="https://youtube.com/watch?v=...">
+        </div>
+        <script>
+          function toggleRecordingSource(type) {
+            const privateGrp = document.getElementById('privateVideoGroup');
+            const youtubeGrp = document.getElementById('youtubeVideoGroup');
+            const privateInput = document.getElementById('privateVideoInput');
+            const youtubeInput = document.getElementById('youtubeVideoInput');
+            
+            if (type === 'youtube') {
+              privateGrp.style.display = 'none';
+              youtubeGrp.style.display = 'block';
+              privateInput.removeAttribute('name');
+              privateInput.removeAttribute('required');
+              youtubeInput.setAttribute('name', 'video_url');
+              youtubeInput.setAttribute('required', 'required');
+            } else {
+              youtubeGrp.style.display = 'none';
+              privateGrp.style.display = 'block';
+              youtubeInput.removeAttribute('name');
+              youtubeInput.removeAttribute('required');
+              privateInput.setAttribute('name', 'video_url');
+              privateInput.setAttribute('required', 'required');
+            }
+          }
+        </script>
         <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
         <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 1h 30m"></div>
         <button type="submit" class="btn btn-primary btn-full"><i class="fa fa-save"></i> Add Recording</button>
