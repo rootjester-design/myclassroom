@@ -149,11 +149,14 @@ function getEmbedUrl(url) {
   if (!/^https?:\/\//i.test(embedUrl)) {
     embedUrl = 'https://' + embedUrl;
   }
-  if (embedUrl.includes('youtube.com/watch?v=')) {
-    embedUrl = embedUrl.replace('watch?v=', 'embed/').split('&')[0];
-  } else if (embedUrl.includes('youtu.be/')) {
-    embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
-  } else if (embedUrl.includes('drive.google.com/file/d/')) {
+  
+  // Robust YouTube ID extraction
+  const ytMatch = embedUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+  if (ytMatch && ytMatch[1]) {
+    return 'https://www.youtube.com/embed/' + ytMatch[1];
+  }
+
+  if (embedUrl.includes('drive.google.com/file/d/')) {
     embedUrl = embedUrl.replace('/view', '/preview');
   }
   return embedUrl;
