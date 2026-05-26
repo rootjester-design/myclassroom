@@ -714,17 +714,35 @@
   }
 
   .course-detail-tabs {
-    gap: 3px;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px;
+    padding: 6px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-
+  .course-detail-tabs::-webkit-scrollbar {
+    display: none;
+  }
   .course-tab-btn {
-    padding: 7px 10px;
-    font-size: 0.75rem;
+    flex: 0 0 auto !important;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+  .topbar-title {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 /* ── Small phones ── */
 @media (max-width: 480px) {
+  .topbar-title {
+    max-width: 100px;
+  }
   .bottom-nav-inner {
     min-height: 64px;
   }
@@ -824,4 +842,14 @@
 /* ── Flex wrap utilities ── */
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+/* ── Mobile Action Stack utility ── */
+@media (max-width: 576px) {
+  .mobile-full-width {
+    width: 100% !important;
+    text-align: center;
+    justify-content: center;
+    margin-top: 8px;
+  }
 }

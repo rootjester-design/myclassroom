@@ -56,7 +56,7 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
     </div>
   </header>
   <div class="page-content" id="coursePageContent">
-    <div class="page-header"><h1 id="coursePageTitle">Loading course...</h1><p>Access course content directly.</p></div>
+    <div class="page-header"><h1 id="courseHeaderTitle">Loading course...</h1><p>Access course content directly.</p></div>
     <div id="coursePageBody"><div class="flex-center" style="padding:40px"><div class="spinner"></div></div></div>
   </div>
 </div>

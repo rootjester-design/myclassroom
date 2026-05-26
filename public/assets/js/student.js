@@ -118,26 +118,31 @@ async function openCourseDetail(courseId) {
 async function loadCoursePage() {
   const container = document.getElementById('coursePageBody');
   const title = document.getElementById('coursePageTitle');
-  if (!container || !title) return;
+  const headerTitle = document.getElementById('courseHeaderTitle');
+  if (!container) return;
   const params = new URLSearchParams(window.location.search);
   const courseId = parseInt(params.get('id') || '', 10);
   if (!courseId) {
-    title.textContent = 'Course not found';
+    if (title) title.textContent = 'Course not found';
+    if (headerTitle) headerTitle.textContent = 'Course not found';
     container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Course not found.</p></div>';
     return;
   }
-  title.textContent = 'Loading course...';
+  if (title) title.textContent = 'Loading course...';
+  if (headerTitle) headerTitle.textContent = 'Loading course...';
   container.innerHTML = '<div class="flex-center" style="padding:40px"><div class="spinner"></div></div>';
   try {
     const res = await fetch(`../api/student/course-detail.php?id=${courseId}`);
     const data = await res.json();
     if (!data.success) {
-      title.textContent = 'Course unavailable';
+      if (title) title.textContent = 'Course unavailable';
+      if (headerTitle) headerTitle.textContent = 'Course unavailable';
       container.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
       return;
     }
     const c = data.course;
-    title.textContent = c.title;
+    if (title) title.textContent = c.title;
+    if (headerTitle) headerTitle.textContent = c.title;
     container.innerHTML = `
       <div class="course-detail-tabs" id="cdTabs">
         <button class="course-tab-btn active" onclick="cdTab('recordings',this)">🎬 Recordings</button>
@@ -166,7 +171,8 @@ async function loadCoursePage() {
       <div id="cd-assignments" class="hidden">${renderAssignments(data.assignments||[])}</div>
       <div id="cd-notes" class="hidden">${renderNotes(data.notes||[], courseId)}</div>`;
   } catch(e) {
-    title.textContent = 'Failed to load course';
+    if (title) title.textContent = 'Failed to load course';
+    if (headerTitle) headerTitle.textContent = 'Failed to load course';
     container.innerHTML = '<div class="alert alert-error">Failed to load course content.</div>';
   }
 }
@@ -183,20 +189,20 @@ function cdTab(name, el) {
 function renderRecordings(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">🎬</div><p>No recordings yet</p></div>';
   return list.map(r=>`<div class="card p-16 mb-12">
-    <div class="flex-between mb-8">
-      <div><div class="fw-600">${r.title}</div><div class="fs-xs text-muted mt-4">${r.description||''}</div></div>
-      <button class="btn btn-primary btn-sm" onclick="playRecording(${r.id}, '${(r.video_url||'').replace(/'/g, "\\'")}')"><i class="fa fa-play"></i> Watch</button>
+    <div class="flex-between flex-wrap gap-12">
+      <div style="flex:1; min-width:200px;"><div class="fw-600">${r.title}</div><div class="fs-xs text-muted mt-4">${r.description||''}</div></div>
+      <button class="btn btn-primary btn-sm mobile-full-width" onclick="playRecording(${r.id}, '${(r.video_url||'').replace(/'/g, "\\'")}')"><i class="fa fa-play"></i> Watch</button>
     </div>
     <div id="rec-vid-${r.id}" style="display:none;position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;margin-top:12px;"></div>
   </div>`).join('');
 }
 function renderZoomList(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">📹</div><p>No live classes scheduled</p></div>';
-  return list.map(z=>`<div class="card p-16 mb-12"><div class="flex-between flex-wrap" style="gap:10px"><div><div class="fw-600">${z.title}</div><div class="fs-xs text-muted mt-4">📅 ${new Date(z.scheduled_at).toLocaleString()}  🕐 ${z.duration_minutes}min</div>${z.meeting_id?`<div class="fs-xs text-muted">ID: ${z.meeting_id} | Pass: ${z.passcode||'N/A'}</div>`:''}</div><a href="${z.zoom_url}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-video"></i> Join</a></div></div>`).join('');
+  return list.map(z=>`<div class="card p-16 mb-12"><div class="flex-between flex-wrap gap-12"><div style="flex:1; min-width:200px;"><div class="fw-600">${z.title}</div><div class="fs-xs text-muted mt-4">📅 ${new Date(z.scheduled_at).toLocaleString()}  🕐 ${z.duration_minutes}min</div>${z.meeting_id?`<div class="fs-xs text-muted">ID: ${z.meeting_id} | Pass: ${z.passcode||'N/A'}</div>`:''}</div><a href="${z.zoom_url}" target="_blank" class="btn btn-primary btn-sm mobile-full-width"><i class="fa fa-video"></i> Join</a></div></div>`).join('');
 }
 function renderMaterials(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">📁</div><p>No materials yet</p></div>';
-  return list.map(m=>`<div class="card p-16 mb-8"><div class="flex-between"><div><div class="fw-600">${m.title}</div><div class="fs-xs text-muted">${m.description||''}</div></div><a href="${m.file_path}" target="_blank" download class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Download</a></div></div>`).join('');
+  return list.map(m=>`<div class="card p-16 mb-8"><div class="flex-between flex-wrap gap-12"><div style="flex:1; min-width:200px;"><div class="fw-600">${m.title}</div><div class="fs-xs text-muted mt-4">${m.description||''}</div></div><a href="${m.file_path}" target="_blank" download class="btn btn-outline btn-sm mobile-full-width"><i class="fa fa-download"></i> Download</a></div></div>`).join('');
 }
 function renderCourseAnn(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">📢</div><p>No announcements</p></div>';
@@ -204,7 +210,7 @@ function renderCourseAnn(list) {
 }
 function renderAssignments(list) {
   if(!list.length) return '<div class="empty-state"><div class="empty-state-icon">📝</div><p>No assignments</p></div>';
-  return list.map(a=>`<div class="card p-16 mb-8"><div class="flex-between"><div><div class="fw-600">${a.title}</div><p class="fs-sm text-muted mt-4">${a.description||''}</p>${a.due_date?`<div class="fs-xs text-primary mt-4">Due: ${new Date(a.due_date).toLocaleDateString()}</div>`:''}</div>${a.file_path?`<a href="${a.file_path}" target="_blank" download class="btn btn-outline btn-sm"><i class="fa fa-download"></i></a>`:''}</div></div>`).join('');
+  return list.map(a=>`<div class="card p-16 mb-8"><div class="flex-between flex-wrap gap-12"><div style="flex:1; min-width:200px;"><div class="fw-600">${a.title}</div><p class="fs-sm text-muted mt-4">${a.description||''}</p>${a.due_date?`<div class="fs-xs text-primary mt-4">Due: ${new Date(a.due_date).toLocaleDateString()}</div>`:''}</div>${a.file_path?`<a href="${a.file_path}" target="_blank" download class="btn btn-outline btn-sm mobile-full-width"><i class="fa fa-download"></i> Download</a>`:''}</div></div>`).join('');
 }
 function renderNotes(list, courseId) {
   return `<div class="mb-16">
@@ -212,7 +218,7 @@ function renderNotes(list, courseId) {
     <div class="form-group"><textarea id="noteContent" class="form-control" rows="3" placeholder="Write your note..."></textarea></div>
     <button class="btn btn-primary btn-sm" onclick="saveNote(${courseId})"><i class="fa fa-save"></i> Save Note</button>
   </div>
-  <div id="notesList">${list.length?list.map(n=>`<div class="card p-16 mb-8"><div class="flex-between"><div class="fw-600">${n.title}</div><span class="fs-xs text-muted">${timeAgo(n.updated_at)}</span></div><p class="fs-sm text-muted mt-8">${n.content||''}</p></div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">📓</div><p>No notes yet</p></div>'}</div>`;
+  <div id="notesList">${list.length?list.map(n=>`<div class="card p-16 mb-8"><div class="flex-between flex-wrap gap-8"><div class="fw-600">${n.title}</div><span class="fs-xs text-muted">${timeAgo(n.updated_at)}</span></div><p class="fs-sm text-muted mt-8">${n.content||''}</p></div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">📓</div><p>No notes yet</p></div>'}</div>`;
 }
 
 async function saveNote(courseId) {
