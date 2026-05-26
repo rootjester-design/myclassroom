@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../app/includes/helpers.php';
 $user = requireAuth('student');
 $db = Database::getInstance();
@@ -6,8 +6,6 @@ $studentId = $user['id'];
 $unread = $db->fetch("SELECT COUNT(*) c FROM notifications WHERE user_id=? AND user_type='student' AND is_read=0", [$studentId])['c'];
 $fullName = htmlspecialchars($user['first_name'].' '.$user['last_name']);
 $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],0,1));
-$librayId = "670052";
-$videoId = $course['bunny_video_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +18,9 @@ $videoId = $course['bunny_video_id'];
 <link rel="stylesheet" href="../assets/css/dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="icon" type="image/png" href="../assets/img/logo-2.png">
+<script>
+    const STUDENT_PHONE = <?= json_encode($user['phone'] ?? '') ?>;
+</script>
 </head>
 <body>
 <div id="toast-container"></div>
@@ -58,14 +59,6 @@ $videoId = $course['bunny_video_id'];
     <div class="page-header"><h1 id="coursePageTitle">Loading course...</h1><p>Access course content directly.</p></div>
     <div id="coursePageBody"><div class="flex-center" style="padding:40px"><div class="spinner"></div></div></div>
   </div>
-  <div class = "Player">
-    <iframe
-    src = "https://iframe.mediadelivery.net/embed/<?=$librayId ?>/<?=$videoId ?>">
-    loading = "lazy"
-    allowfullscreen
-    allow = "autoplay">
-    </iframe>
-  </div>  
 </div>
 </div>
 

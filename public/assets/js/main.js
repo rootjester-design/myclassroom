@@ -163,11 +163,36 @@ function playRecording(id, url) {
   const container = document.getElementById('rec-vid-' + id);
   if (container) {
     const embedUrl = getEmbedUrl(url);
+    const watermarkText = window.STUDENT_PHONE || '';
+    let watermarkHtml = '';
+    if (watermarkText) {
+      watermarkHtml = `
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <div style="transform:rotate(-25deg);font-size:clamp(2rem, 5vw, 4rem);color:rgba(255,255,255,0.25);font-weight:900;user-select:none;white-space:nowrap;text-shadow: 2px 2px 4px rgba(0,0,0,0.5); letter-spacing: 4px;">
+            ${watermarkText}
+          </div>
+        </div>
+      `;
+    }
+
     container.innerHTML = `
       <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;background:#000;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      ${watermarkHtml}
     `;
     container.style.display = 'block';
     const playBtn = container.parentElement.querySelector('button[onclick^="playRecording"]');
     if (playBtn) playBtn.style.display = 'none';
+
+    try {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) { /* Safari */
+        container.webkitRequestFullscreen();
+      } else if (container.msRequestFullscreen) { /* IE11 */
+        container.msRequestFullscreen();
+      }
+    } catch(err) {
+      console.warn("Fullscreen request failed:", err);
+    }
   }
 }
