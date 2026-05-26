@@ -413,14 +413,19 @@ class Database {
         try {
             $cols = $this->pdo->query("PRAGMA table_info(tutors)")->fetchAll(PDO::FETCH_ASSOC);
             $hasBankDetails = false;
+            $hasBunnyLibId = false;
             foreach ($cols as $col) {
-                if (isset($col['name']) && $col['name'] === 'bank_details') { $hasBankDetails = true; break; }
+                if (isset($col['name']) && $col['name'] === 'bank_details') { $hasBankDetails = true; }
+                if (isset($col['name']) && $col['name'] === 'bunny_library_id') { $hasBunnyLibId = true; }
             }
             if (!$hasBankDetails) {
                 $this->pdo->exec("ALTER TABLE tutors ADD COLUMN bank_details TEXT NULL");
             }
+            if (!$hasBunnyLibId) {
+                $this->pdo->exec("ALTER TABLE tutors ADD COLUMN bunny_library_id TEXT NULL");
+            }
         } catch (PDOException $e) {
-            error_log('Migration warning: failed to ensure bank_details column: '.$e->getMessage());
+            error_log('Migration warning: failed to ensure columns for tutors: '.$e->getMessage());
         }
 
         // Seed default super admin

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../app/includes/helpers.php';
 $user = requireAuth('super_admin');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
@@ -13,6 +13,7 @@ $phone   = sanitize($_POST['phone']??'');
 $pass    = $_POST['password']??'';
 $subj    = sanitize($_POST['subjects']??'');
 $display = sanitize($_POST['display_name']??'');
+$bunnyLib= sanitize($_POST['bunny_library_id']??'');
 $approved= isset($_POST['is_approved'])?1:0;
 
 if (!$fname||!$lname||!$email||!$phone) jsonResponse(['success'=>false,'message'=>'Required fields missing']);
@@ -21,7 +22,7 @@ if ($editId) {
     // Update
     $existing = $db->fetch("SELECT id FROM tutors WHERE id=?",[$editId]);
     if (!$existing) jsonResponse(['success'=>false,'message'=>'Tutor not found']);
-    $db->execute("UPDATE tutors SET first_name=?,last_name=?,email=?,phone=?,subjects=?,display_name=?,updated_at=datetime('now') WHERE id=?",[$fname,$lname,$email,$phone,$subj,$display,$editId]);
+    $db->execute("UPDATE tutors SET first_name=?,last_name=?,email=?,phone=?,subjects=?,display_name=?,bunny_library_id=?,updated_at=datetime('now') WHERE id=?",[$fname,$lname,$email,$phone,$subj,$display,$bunnyLib,$editId]);
     if ($pass) $db->execute("UPDATE tutors SET password=? WHERE id=?",[password_hash($pass,PASSWORD_BCRYPT),$editId]);
     logActivity((int)$user['id'],'admin','edit_tutor',"Edited tutor ID:{$editId}");
     jsonResponse(['success'=>true,'message'=>'Tutor updated']);
@@ -32,7 +33,7 @@ if (!$pass||strlen($pass)<8) jsonResponse(['success'=>false,'message'=>'Password
 $exists = $db->fetch("SELECT id FROM tutors WHERE email=? OR phone=?",[$email,$phone]);
 if ($exists) jsonResponse(['success'=>false,'message'=>'Email or phone already exists']);
 
-$id = $db->insert("INSERT INTO tutors (first_name,last_name,email,phone,password,subjects,display_name,is_approved,is_active) VALUES (?,?,?,?,?,?,?,?,1)",
-    [$fname,$lname,$email,$phone,password_hash($pass,PASSWORD_BCRYPT),$subj,$display,$approved]);
+$id = $db->insert("INSERT INTO tutors (first_name,last_name,email,phone,password,subjects,display_name,bunny_library_id,is_approved,is_active) VALUES (?,?,?,?,?,?,?,?,?,1)",
+    [$fname,$lname,$email,$phone,password_hash($pass,PASSWORD_BCRYPT),$subj,$display,$bunnyLib,$approved]);
 logActivity((int)$user['id'],'admin','create_tutor',"Created tutor: {$fname} {$lname}");
 jsonResponse(['success'=>true,'message'=>'Tutor account created successfully']);

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../app/includes/helpers.php';
 startSession();
 $user = getAuthUser();
@@ -187,7 +187,10 @@ $stats = [
         </div>
         <div class="form-group"><label class="form-label">Password *</label><input type="password" name="password" id="tutorPass" class="form-control" placeholder="Min 8 characters" required></div>
         <div class="form-group"><label class="form-label">Subjects</label><input type="text" name="subjects" class="form-control" placeholder="e.g. Maths, Science"></div>
-        <div class="form-group"><label class="form-label">Display Name</label><input type="text" name="display_name" class="form-control"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Display Name</label><input type="text" name="display_name" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Bunny Library ID</label><input type="text" name="bunny_library_id" class="form-control" placeholder="e.g. 123456"></div>
+        </div>
         <div class="form-group" id="autoApproveWrap" style="display:flex;align-items:center;gap:10px">
           <input type="checkbox" name="is_approved" id="autoApprove" value="1" checked>
           <label for="autoApprove" class="form-label" style="margin:0">Auto-approve tutor</label>

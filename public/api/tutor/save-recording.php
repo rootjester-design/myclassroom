@@ -12,6 +12,16 @@ $desc  = sanitize($_POST['description']??'');
 $dur   = sanitize($_POST['duration']??'');
 if (!$cid||!$title||!$vurl) jsonResponse(['success'=>false,'message'=>'Required fields missing']);
 
+// Check if the tutor has a configured Bunny Library ID
+$tutorData = $db->fetch("SELECT bunny_library_id FROM tutors WHERE id=?", [$tid]);
+$bunnyLib = $tutorData['bunny_library_id'] ?? null;
+
+// If tutor just pasted the Video ID (no http protocol) and they have a library configured
+if (!preg_match('/^https?:\/\//i', $vurl) && !empty($bunnyLib)) {
+    $bunny_id = $vurl;
+    $vurl = "https://iframe.mediadelivery.net/play/{$bunnyLib}/{$bunny_id}";
+}
+
 // Extract bunny video ID from URL if it's a bunny stream link and bunny_id is empty
 if (empty($bunny_id) && strpos($vurl, 'iframe.mediadelivery.net/play/') !== false) {
     $parts = explode('/', parse_url($vurl, PHP_URL_PATH));

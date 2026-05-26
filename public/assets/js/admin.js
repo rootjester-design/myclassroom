@@ -128,6 +128,7 @@ function editTutor(id){
   f.first_name.value=t.first_name;f.last_name.value=t.last_name;
   f.email.value=t.email||'';f.phone.value=t.phone;
   f.subjects.value=t.subjects||'';f.display_name.value=t.display_name||'';
+  if(f.bunny_library_id) f.bunny_library_id.value=t.bunny_library_id||'';
   f.password.required=false;f.password.placeholder='Leave blank to keep';
   openModal('createTutorModal');
 }
