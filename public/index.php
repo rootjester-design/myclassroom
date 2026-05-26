@@ -424,10 +424,14 @@ footer { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-
     <img src="assets/img/logo-1.png" alt="MyClassroom" style="height: 40px; opacity: 0.8;">
   </div>
   <div class="social-icons">
-    <a href="#"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.facebook.com/profile.php?id=61590355193106" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
     <a href="#"><i class="fab fa-twitter"></i></a>
     <a href="#"><i class="fab fa-instagram"></i></a>
     <a href="#"><i class="fab fa-youtube"></i></a>
+  </div>
+  <div style="margin-bottom: 32px; font-size: 0.95rem; color: var(--text-main);">
+    <a href="mailto:contact@myclassroom.lk" style="color: inherit; text-decoration: none; margin-right: 20px;"><i class="fa fa-envelope" style="color: var(--primary); margin-right: 6px;"></i> contact@myclassroom.lk</a>
+    <a href="tel:+94711555621" style="color: inherit; text-decoration: none;"><i class="fa fa-phone" style="color: var(--primary); margin-right: 6px;"></i> +94 71 1555 621</a>
   </div>
   <div class="footer-links">
     <a href="#features">Features</a>
