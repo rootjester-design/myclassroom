@@ -271,6 +271,7 @@ $initial  = strtoupper(substr($user['first_name'],0,1).substr($user['last_name']
       <form id="recordingForm">
         <div class="form-group"><label class="form-label">Course *</label><select name="course_id" class="form-control" id="recCourseSelect"></select></div>
         <div class="form-group"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Bunny Video ID</label><input type="text" name="bunny_video_id" class="form-control" placeholder="Bunny Video ID"></div>
         <div class="form-group"><label class="form-label">Video URL *</label><input type="url" name="video_url" class="form-control" placeholder="YouTube or Google Drive link" required></div>
         <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
         <div class="form-group"><label class="form-label">Duration</label><input type="text" name="duration" class="form-control" placeholder="e.g. 1h 30m"></div>

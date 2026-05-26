@@ -6,11 +6,12 @@ if (!verifyCsrfToken()) jsonResponse(['success'=>false,'message'=>'Invalid CSRF 
 $db = Database::getInstance(); $tid = $user['id'];
 $cid   = (int)($_POST['course_id']??0);
 $title = sanitize($_POST['title']??'');
+$bunny_id = sanitize($_POST['bunny_video_id']??'');
 $vurl  = sanitize($_POST['video_url']??'');
 $desc  = sanitize($_POST['description']??'');
 $dur   = sanitize($_POST['duration']??'');
 if (!$cid||!$title||!$vurl) jsonResponse(['success'=>false,'message'=>'Required fields missing']);
 $own = $db->fetch("SELECT id FROM courses WHERE id=? AND tutor_id=?",[$cid,$tid]);
 if (!$own) jsonResponse(['success'=>false,'message'=>'Course not found']);
-$db->insert("INSERT INTO recordings (course_id,tutor_id,title,video_url,description,duration) VALUES (?,?,?,?,?,?)",[$cid,$tid,$title,$vurl,$desc,$dur]);
+$db->insert("INSERT INTO recordings (course_id,tutor_id,title,bunny_video_id,video_url,description,duration) VALUES (?,?,?,?,?,?,?)",[$cid,$tid,$title,$bunny_id,$vurl,$desc,$dur]);
 jsonResponse(['success'=>true,'message'=>'Recording added']);

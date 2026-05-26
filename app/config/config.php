@@ -80,6 +80,10 @@ define('CSRF_TOKEN_NAME', '_csrf_token');
 define('SUPER_ADMIN_DEFAULT_EMAIL',    $_ENV['SUPER_ADMIN_EMAIL']    ?? 'admin@myclassroom.lk');
 define('SUPER_ADMIN_DEFAULT_PASSWORD', $_ENV['SUPER_ADMIN_PASSWORD'] ?? 'Admin@123456');
 
+// ── Cron & Automated Tasks Security ──────────────────────────────────────────
+define('CRON_SECRET', $_ENV['CRON_SECRET'] ?? 'myclassroom_birthday_cron_secret_123');
+
+
 // ── Error Reporting ───────────────────────────────────────────────────────────
 $_isProduction = (($_ENV['APP_ENV'] ?? 'production') === 'production');
 if ($_isProduction) {

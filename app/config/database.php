@@ -235,6 +235,7 @@ class Database {
                 tutor_id INTEGER NOT NULL,
                 title TEXT NOT NULL,
                 description TEXT,
+                bunny_video_id TEXT,
                 video_url TEXT,
                 duration TEXT,
                 thumbnail TEXT,

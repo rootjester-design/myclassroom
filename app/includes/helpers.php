@@ -621,6 +621,78 @@ function createNotification(int $userId, string $userType, string $title, string
 }
 
 // ============================================================
+// Birthday Wishes Helper
+// ============================================================
+function sendBirthdayWishes(): array {
+    $db = Database::getInstance();
+    $today = date('m-d');
+    
+    // Fetch active, verified, non-suspended students who have a birthday
+    $students = $db->fetchAll(
+        "SELECT id, first_name, last_name, phone, email, birthday 
+         FROM students 
+         WHERE is_active = 1 AND is_suspended = 0 AND birthday IS NOT NULL AND birthday != ''"
+    );
+    
+    $wishedCount = 0;
+    $smsSentCount = 0;
+    $errors = [];
+    $wishedStudents = [];
+    
+    foreach ($students as $student) {
+        $studentBirthday = date('m-d', strtotime($student['birthday']));
+        if ($studentBirthday === $today) {
+            // Check if already wished today (using both UTC and local server dates for timezone robustness)
+            $already = $db->fetch(
+                "SELECT id FROM notifications 
+                 WHERE user_id = ? AND user_type = 'student' AND title = 'Happy Birthday!' 
+                 AND (date(created_at) = date('now') OR date(created_at, 'localtime') = date('now', 'localtime'))",
+                [$student['id']]
+            );
+            
+            if (!$already) {
+                $message = "Happy Birthday, {$student['first_name']}! 🎉 Wishing you a great year of learning with MyClassroom.";
+                
+                // Send SMS via sendSms
+                $smsResult = sendSms($student['phone'], $message);
+                
+                // Create database notification (even if SMS fails, we want database notification)
+                createNotification(
+                    $student['id'],
+                    'student',
+                    'Happy Birthday!',
+                    'Enjoy your special day with a birthday greeting from MyClassroom.',
+                    'success'
+                );
+                
+                $wishedCount++;
+                if (isset($smsResult['success']) && $smsResult['success']) {
+                    $smsSentCount++;
+                } else {
+                    $errors[] = "Failed to send SMS to student ID {$student['id']} ({$student['phone']}): " . ($smsResult['message'] ?? 'Unknown error');
+                }
+                
+                $wishedStudents[] = [
+                    'id' => $student['id'],
+                    'name' => $student['first_name'] . ' ' . $student['last_name'],
+                    'phone' => $student['phone'],
+                    'sms_status' => (isset($smsResult['success']) && $smsResult['success']) ? 'sent' : 'failed'
+                ];
+            }
+        }
+    }
+    
+    return [
+        'success' => true,
+        'wished_count' => $wishedCount,
+        'sms_sent_count' => $smsSentCount,
+        'students' => $wishedStudents,
+        'errors' => $errors
+    ];
+}
+
+
+// ============================================================
 // Redirect helper
 // ============================================================
 function redirect(string $url): void {

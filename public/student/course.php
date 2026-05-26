@@ -6,6 +6,8 @@ $studentId = $user['id'];
 $unread = $db->fetch("SELECT COUNT(*) c FROM notifications WHERE user_id=? AND user_type='student' AND is_read=0", [$studentId])['c'];
 $fullName = htmlspecialchars($user['first_name'].' '.$user['last_name']);
 $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],0,1));
+$librayId = "670052";
+$videoId = $course['bunny_video_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,6 +58,14 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
     <div class="page-header"><h1 id="coursePageTitle">Loading course...</h1><p>Access course content directly.</p></div>
     <div id="coursePageBody"><div class="flex-center" style="padding:40px"><div class="spinner"></div></div></div>
   </div>
+  <div class = "Player">
+    <iframe
+    src = "https://iframe.mediadelivery.net/embed/<?=$librayId ?>/<?=$videoId ?>">
+    loading = "lazy"
+    allowfullscreen
+    allow = "autoplay">
+    </iframe>
+  </div>  
 </div>
 </div>
 
