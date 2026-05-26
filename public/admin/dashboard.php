@@ -219,49 +219,7 @@ $stats = [
       </div>
     </div>
 
-    <!-- BIRTHDAYS -->
-    <div id="tab-birthdays" class="tab-content">
-      <div class="flex-between mb-20 flex-wrap" style="gap:12px">
-        <h2 class="section-title">🎂 Birthday Wishes</h2>
-        <button id="btnSendWishes" class="btn btn-primary" onclick="triggerBirthdayWishes()"><i class="fa fa-paper-plane"></i> Send Birthday Wishes Now</button>
-      </div>
 
-      <!-- Stats -->
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
-        <div class="stat-card"><div class="stat-icon">🎂</div><div class="stat-value" id="bdStatToday">—</div><div class="stat-label">Birthdays Today</div></div>
-        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="bdStatSent">—</div><div class="stat-label">Wishes Sent Today</div></div>
-        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="bdStatUpcoming">—</div><div class="stat-label">Upcoming (7 days)</div></div>
-      </div>
-
-      <!-- Today's Birthdays -->
-      <div class="card mb-20">
-        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">🎉 Today's Birthdays</h3></div>
-        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>Status</th></tr></thead><tbody id="birthday-today-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
-      </div>
-
-      <!-- Upcoming Birthdays -->
-      <div class="card mb-20">
-        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">📅 Upcoming Birthdays (Next 7 Days)</h3></div>
-        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>When</th></tr></thead><tbody id="birthday-upcoming-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
-      </div>
-
-      <!-- Cron Automation -->
-      <div class="card p-20 mb-20">
-        <h3 class="section-title mb-12" style="font-size:1rem">⚙️ Automate with Cron Job</h3>
-        <p class="fs-sm text-muted mb-12">Add this URL to your server's cron job to automatically send wishes daily at 8:00 AM.</p>
-        <div style="display:flex;gap:8px;align-items:center">
-          <code id="bdCronUrl" style="flex:1;background:var(--gray-100);padding:10px 14px;border-radius:8px;font-size:0.8rem;word-break:break-all">Loading...</code>
-          <button class="btn btn-outline btn-sm" onclick="copyBdCronUrl()"><i class="fa fa-copy"></i> Copy</button>
-        </div>
-        <p class="fs-xs text-muted mt-8">Example cron: <code>0 8 * * * curl -s "[URL above]"</code></p>
-      </div>
-
-      <!-- History -->
-      <div class="card">
-        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">📜 Recent Birthday Wishes Log</h3></div>
-        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Sent At</th></tr></thead><tbody id="birthday-history-tbody"><tr><td colspan="3" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
-      </div>
-    </div>
 
     <!-- SETTINGS -->
     <div id="tab-settings" class="tab-content">
