@@ -46,7 +46,6 @@ $initial = strtoupper(substr($user['first_name'],0,1).substr($user['last_name'],
     <div style="display:flex;align-items:center;gap:12px">
       <button class="icon-btn" onclick="window.location.href='dashboard.php?tab=courses'" title="Back to My Courses"><i class="fa fa-arrow-left"></i></button>
       <button class="icon-btn" onclick="toggleSidebar()" id="menuBtn"><i class="fa fa-bars"></i></button>
-      <span class="topbar-title" id="coursePageTitle">Loading...</span>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="notifBtn" onclick="toggleNotif()"><i class="fa fa-bell"></i><?php if($unread>0): ?><span class="notif-dot" id="notifDot"></span><?php endif; ?></button>

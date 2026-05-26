@@ -42,7 +42,7 @@ $stats = [
     <button class="nav-item" onclick="switchTab('students',this)"><span class="nav-icon"><i class="fa fa-users"></i></span> Students</button>
     <button class="nav-item" onclick="switchTab('courses',this)"><span class="nav-icon"><i class="fa fa-book"></i></span> Courses</button>
     <button class="nav-item" onclick="switchTab('payments',this)"><span class="nav-icon"><i class="fa fa-credit-card"></i></span> Payments <span id="pendingBadge" class="nav-badge" style="<?=$stats['pending']>0?'':'display:none'?>"><?=$stats['pending']?></span></button>
-    <button class="nav-item" onclick="switchTab('revenue',this)"><span class="nav-icon"><i class="fa fa-chart-line"></i></span> 💰 Revenue</button>
+    <button class="nav-item" onclick="switchTab('revenue',this)"><span class="nav-icon"><i class="fa fa-chart-line"></i></span> Revenue</button>
     <button class="nav-item" onclick="switchTab('birthdays',this)"><span class="nav-icon">🎂</span> Birthday Wishes <span id="birthdayBadge" class="nav-badge" style="display:none"></span></button>
     <button class="nav-item" onclick="switchTab('logs',this)"><span class="nav-icon"><i class="fa fa-shield-alt"></i></span> Activity Logs</button>
     <button class="nav-item" onclick="switchTab('settings',this)"><span class="nav-icon"><i class="fa fa-cog"></i></span> Settings</button>
