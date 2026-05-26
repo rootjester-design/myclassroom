@@ -43,6 +43,7 @@ $stats = [
     <button class="nav-item" onclick="switchTab('courses',this)"><span class="nav-icon"><i class="fa fa-book"></i></span> Courses</button>
     <button class="nav-item" onclick="switchTab('payments',this)"><span class="nav-icon"><i class="fa fa-credit-card"></i></span> Payments <span id="pendingBadge" class="nav-badge" style="<?=$stats['pending']>0?'':'display:none'?>"><?=$stats['pending']?></span></button>
     <button class="nav-item" onclick="switchTab('revenue',this)"><span class="nav-icon"><i class="fa fa-chart-line"></i></span> 💰 Revenue</button>
+    <button class="nav-item" onclick="switchTab('birthdays',this)"><span class="nav-icon">🎂</span> Birthday Wishes <span id="birthdayBadge" class="nav-badge" style="display:none"></span></button>
     <button class="nav-item" onclick="switchTab('logs',this)"><span class="nav-icon"><i class="fa fa-shield-alt"></i></span> Activity Logs</button>
     <button class="nav-item" onclick="switchTab('settings',this)"><span class="nav-icon"><i class="fa fa-cog"></i></span> Settings</button>
   </nav>
@@ -149,6 +150,116 @@ $stats = [
         <h3 class="section-title" style="font-size:1rem">Tutor Commission Management</h3>
         <p class="text-muted fs-sm mb-16">Set commission percentages for each tutor. The tutor keeps this percentage, admin keeps the rest.</p>
         <div class="table-wrap"><table><thead><tr><th>Tutor</th><th>Total Earned</th><th>Commission %</th><th>Tutor Income</th><th>Admin Income</th><th>Action</th></tr></thead><tbody id="tutorCommissionTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- BIRTHDAYS -->
+    <div id="tab-birthdays" class="tab-content">
+      <div class="welcome-banner" style="background:linear-gradient(135deg,#7b1fa2,#4a148c)">
+        <div><h2>🎂 Birthday Wishes</h2><p>View today's birthdays and send personalised SMS greetings</p></div>
+        <span class="welcome-emoji">🎉</span>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)" id="birthdayStatsGrid">
+        <div class="stat-card"><div class="stat-icon">🎂</div><div class="stat-value" id="bdStatToday">-</div><div class="stat-label">Birthdays Today</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="bdStatSent">-</div><div class="stat-label">Wishes Sent Today</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="bdStatUpcoming">-</div><div class="stat-label">Upcoming (7 days)</div></div>
+      </div>
+
+      <!-- Action row -->
+      <div class="flex-between mb-20 flex-wrap" style="gap:12px;align-items:center">
+        <h2 class="section-title">Today's Birthdays</h2>
+        <button class="btn btn-primary" id="btnSendWishes" onclick="triggerBirthdayWishes()">
+          <i class="fa fa-paper-plane"></i> Send Birthday Wishes Now
+        </button>
+      </div>
+
+      <!-- Today's birthday table -->
+      <div class="card mb-20">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>Status</th></tr></thead>
+            <tbody id="birthday-today-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Upcoming birthdays -->
+      <h3 class="section-title mb-16">📅 Upcoming Birthdays (Next 7 Days)</h3>
+      <div class="card mb-20">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>Days Away</th></tr></thead>
+            <tbody id="birthday-upcoming-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent wish log -->
+      <h3 class="section-title mb-16">📋 Recent Wish History</h3>
+      <div class="card mb-20">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Phone</th><th>Sent At</th></tr></thead>
+            <tbody id="birthday-history-tbody"><tr><td colspan="3" class="text-center text-muted" style="padding:32px">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cron automation info -->
+      <div class="card p-24" id="bdCronBox">
+        <h3 class="section-title" style="font-size:1rem;margin-bottom:12px">⚙️ Automate with a Cron Job</h3>
+        <p class="fs-sm text-muted mb-12">Run this URL daily (e.g., at 8 AM server time) to automatically send birthday wishes without admin intervention:</p>
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px 16px;font-family:monospace;font-size:0.82rem;word-break:break-all;color:var(--black);display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <span id="bdCronUrl">Loading...</span>
+          <button class="btn btn-outline btn-sm" onclick="copyBdCronUrl()" title="Copy"><i class="fa fa-copy"></i></button>
+        </div>
+        <p class="fs-xs text-muted mt-12">💡 Example crontab entry: <code>0 8 * * * curl -s "[url above]" >> /var/log/birthday.log</code></p>
+      </div>
+    </div>
+
+    <!-- BIRTHDAYS -->
+    <div id="tab-birthdays" class="tab-content">
+      <div class="flex-between mb-20 flex-wrap" style="gap:12px">
+        <h2 class="section-title">🎂 Birthday Wishes</h2>
+        <button id="btnSendWishes" class="btn btn-primary" onclick="triggerBirthdayWishes()"><i class="fa fa-paper-plane"></i> Send Birthday Wishes Now</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="stat-card"><div class="stat-icon">🎂</div><div class="stat-value" id="bdStatToday">—</div><div class="stat-label">Birthdays Today</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="bdStatSent">—</div><div class="stat-label">Wishes Sent Today</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="bdStatUpcoming">—</div><div class="stat-label">Upcoming (7 days)</div></div>
+      </div>
+
+      <!-- Today's Birthdays -->
+      <div class="card mb-20">
+        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">🎉 Today's Birthdays</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>Status</th></tr></thead><tbody id="birthday-today-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
+      </div>
+
+      <!-- Upcoming Birthdays -->
+      <div class="card mb-20">
+        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">📅 Upcoming Birthdays (Next 7 Days)</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Birthday</th><th>When</th></tr></thead><tbody id="birthday-upcoming-tbody"><tr><td colspan="4" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
+      </div>
+
+      <!-- Cron Automation -->
+      <div class="card p-20 mb-20">
+        <h3 class="section-title mb-12" style="font-size:1rem">⚙️ Automate with Cron Job</h3>
+        <p class="fs-sm text-muted mb-12">Add this URL to your server's cron job to automatically send wishes daily at 8:00 AM.</p>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code id="bdCronUrl" style="flex:1;background:var(--gray-100);padding:10px 14px;border-radius:8px;font-size:0.8rem;word-break:break-all">Loading...</code>
+          <button class="btn btn-outline btn-sm" onclick="copyBdCronUrl()"><i class="fa fa-copy"></i> Copy</button>
+        </div>
+        <p class="fs-xs text-muted mt-8">Example cron: <code>0 8 * * * curl -s "[URL above]"</code></p>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="p-16" style="border-bottom:1px solid var(--gray-100)"><h3 class="section-title" style="font-size:1rem">📜 Recent Birthday Wishes Log</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Phone</th><th>Sent At</th></tr></thead><tbody id="birthday-history-tbody"><tr><td colspan="3" class="text-center text-muted" style="padding:32px"><div class="spinner"></div></td></tr></tbody></table></div>
       </div>
     </div>
 

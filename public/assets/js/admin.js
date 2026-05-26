@@ -1,4 +1,4 @@
-const tabTitles={overview:'Dashboard Overview',tutors:'Tutor Management',students:'Student Management',courses:'Course Management',payments:'Payment Management',revenue:'Revenue Management',logs:'Activity Logs',settings:'Settings'};
+const tabTitles={overview:'Dashboard Overview',tutors:'Tutor Management',students:'Student Management',courses:'Course Management',payments:'Payment Management',revenue:'Revenue Management',logs:'Activity Logs',settings:'Settings',birthdays:'Birthday Wishes'};
 let allTutors=[],allStudents=[],allPayments=[],currentPayStatus='pending';
 
 // Core API helper — sends proper headers so PHP isAjax() returns true
@@ -39,6 +39,7 @@ function switchTab(name,el){
   if(name==='payments')loadPayments('pending');
   if(name==='revenue')loadRevenue();
   if(name==='logs')loadLogs();
+  if(name==='birthdays')loadBirthdays();
 }
 
 
@@ -195,3 +196,105 @@ async function saveCommission(){
 }
 
 loadOverview();
+
+// ── Birthday Wishes ──────────────────────────────────────────
+async function loadBirthdays() {
+  const d = await api('../api/admin/birthday-wishes.php');
+  if (!d.success) { showToast('Failed to load birthday data', 'error'); return; }
+
+  // Stats
+  document.getElementById('bdStatToday').textContent    = d.today_count ?? 0;
+  document.getElementById('bdStatSent').textContent     = d.wished_today ?? 0;
+  document.getElementById('bdStatUpcoming').textContent = (d.upcoming_birthdays || []).length;
+
+  // Badge on nav item
+  const pending = (d.today_count ?? 0) - (d.wished_today ?? 0);
+  const badge = document.getElementById('birthdayBadge');
+  if (badge) { badge.textContent = pending > 0 ? pending : ''; badge.style.display = pending > 0 ? '' : 'none'; }
+
+  // Cron URL
+  if (d.cron_url) { document.getElementById('bdCronUrl').textContent = d.cron_url; }
+
+  // Today's birthdays table
+  const tb = document.getElementById('birthday-today-tbody');
+  const todayList = d.today_birthdays || [];
+  if (!todayList.length) {
+    tb.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:32px">🎉 No birthdays today!</td></tr>';
+  } else {
+    tb.innerHTML = todayList.map(s => {
+      const statusBadge = s.wish_sent
+        ? '<span class="badge badge-green">✅ Wish Sent</span>'
+        : (s.is_suspended ? '<span class="badge badge-red">⛔ Suspended</span>' : '<span class="badge badge-yellow">⏳ Pending</span>');
+      return `<tr>
+        <td class="fw-600">${s.name}</td>
+        <td class="fs-sm">${s.phone}</td>
+        <td class="fs-sm">${s.birthday ? new Date(s.birthday+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric'}) : '-'}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Upcoming birthdays table
+  const tbu = document.getElementById('birthday-upcoming-tbody');
+  const upcoming = d.upcoming_birthdays || [];
+  if (!upcoming.length) {
+    tbu.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:32px">No upcoming birthdays in the next 7 days.</td></tr>';
+  } else {
+    tbu.innerHTML = upcoming.map(s => `<tr>
+      <td class="fw-600">${s.name}</td>
+      <td class="fs-sm">${s.phone}</td>
+      <td class="fs-sm">${s.birthday ? new Date(s.birthday+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric'}) : '-'}</td>
+      <td><span class="badge badge-gray">${s.days_away === 1 ? 'Tomorrow' : 'In ' + s.days_away + ' days'}</span></td>
+    </tr>`).join('');
+  }
+
+  // Recent wish history table
+  const tbh = document.getElementById('birthday-history-tbody');
+  const history = d.recent_wishes || [];
+  if (!history.length) {
+    tbh.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:32px">No birthday wishes sent yet.</td></tr>';
+  } else {
+    tbh.innerHTML = history.map(w => `<tr>
+      <td class="fw-600 fs-sm">${w.student_name || '(deleted)'}</td>
+      <td class="fs-sm">${w.phone || '-'}</td>
+      <td class="fs-xs">${new Date(w.created_at).toLocaleString()}</td>
+    </tr>`).join('');
+  }
+}
+
+async function triggerBirthdayWishes() {
+  const btn = document.getElementById('btnSendWishes');
+  if (!btn) return;
+  if (!confirm('Send birthday wishes to all students who have a birthday today and haven\'t been wished yet?')) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Sending...';
+  const d = await api('../api/admin/birthday-wishes.php', { method: 'POST' });
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa fa-paper-plane"></i> Send Birthday Wishes Now';
+  if (d.success) {
+    const msg = d.wished_count > 0
+      ? `🎂 Wished ${d.wished_count} student(s) — ${d.sms_sent_count} SMS sent successfully!`
+      : '✅ All birthday students have already been wished today!';
+    showToast(msg, 'success');
+    loadBirthdays(); // refresh the tables
+  } else {
+    showToast(d.message || 'Failed to send birthday wishes', 'error');
+  }
+}
+
+function copyBdCronUrl() {
+  const url = document.getElementById('bdCronUrl')?.textContent || '';
+  if (!url || url === 'Loading...') return;
+  navigator.clipboard.writeText(url).then(() => showToast('Cron URL copied to clipboard!', 'success'));
+}
+
+// Show birthday badge on initial load (overview)
+(async function initBirthdayBadge() {
+  try {
+    const d = await api('../api/admin/birthday-wishes.php');
+    if (!d.success) return;
+    const pending = (d.today_count ?? 0) - (d.wished_today ?? 0);
+    const badge = document.getElementById('birthdayBadge');
+    if (badge && pending > 0) { badge.textContent = pending; badge.style.display = ''; }
+  } catch(e) { /* non-critical */ }
+})();
