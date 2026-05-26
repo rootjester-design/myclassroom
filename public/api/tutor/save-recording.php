@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../app/includes/helpers.php';
 $user = requireAuth('tutor');
 if ($_SERVER['REQUEST_METHOD']!=='POST') jsonResponse(['success'=>false,'message'=>'Method not allowed'],405);
@@ -11,6 +11,13 @@ $vurl  = sanitize($_POST['video_url']??'');
 $desc  = sanitize($_POST['description']??'');
 $dur   = sanitize($_POST['duration']??'');
 if (!$cid||!$title||!$vurl) jsonResponse(['success'=>false,'message'=>'Required fields missing']);
+
+// Extract bunny video ID from URL if it's a bunny stream link and bunny_id is empty
+if (empty($bunny_id) && strpos($vurl, 'iframe.mediadelivery.net/play/') !== false) {
+    $parts = explode('/', parse_url($vurl, PHP_URL_PATH));
+    $bunny_id = end($parts);
+}
+
 $own = $db->fetch("SELECT id FROM courses WHERE id=? AND tutor_id=?",[$cid,$tid]);
 if (!$own) jsonResponse(['success'=>false,'message'=>'Course not found']);
 $db->insert("INSERT INTO recordings (course_id,tutor_id,title,bunny_video_id,video_url,description,duration) VALUES (?,?,?,?,?,?,?)",[$cid,$tid,$title,$bunny_id,$vurl,$desc,$dur]);
